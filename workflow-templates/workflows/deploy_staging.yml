@@ -1,0 +1,164 @@
+name: k8s Pipeline
+on:
+  push:
+    branches:
+      - release/*
+      - main
+  pull_request:
+    branches:
+      - release/*
+      - main
+    paths:
+      - 'src/**'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'tsconfig.json'
+      - '.dockerignore'
+      - 'Dockerfile'
+      - '.github/**'
+jobs:
+  push_to_registry:
+    env:
+      IMAGE_NAME: billing-server
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Set environment variables
+        run: |
+          # Short name for current branch. For PRs, use target branch (base ref)
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GIT_BRANCH=${GIT_BRANCH//\./-}
+          GIT_BRANCH=${GIT_BRANCH//\//-}
+          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+      
+      - name: Log in to GitHub Docker Registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ github.sha }}
+      
+      - name: Clean up old packages
+        uses: actions/delete-package-versions@v2
+        with: 
+          package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          min-versions-to-keep: 3
+          token: ${{ secrets.GH_PR_TOKEN }}
+  k8s_deploy:
+    needs: push_to_registry
+    name: Provisioning environment and database
+    env:
+      IMAGE_NAME: billing-server
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Set environment variables
+      run: |
+        # Short name for current branch. For PRs, use target branch (base ref)
+        GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+        GIT_BRANCH=${GIT_BRANCH//\./-}
+        GIT_BRANCH=${GIT_BRANCH//\//-}
+        GIT_BRANCH=${GIT_BRANCH//\_/-}
+        echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+
+    - name: Create kubeconfig.yml
+      run: |
+          echo ${{ secrets.KUBECONFIG_YML }} | base64 -d >> kubeconfig.yml
+      shell: bash
+        
+    - name: Update deployment file with image info
+      run: TAG=${{ github.sha }} && sed -i 's|<IMAGE>|ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:'${TAG}'|' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+
+    - name: Update deployment file with github secret info
+      run: |
+        sed -i 's|<GITHUB_SECRET>|${{ secrets.GH_SECRET }}|' $GITHUB_WORKSPACE/.github/config/k8s_secret.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/.github/config/k8s_secret.yml
+
+    - name: Configure mysql database and user
+      run: |
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}";'
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%' IDENTIFIED BY '${{ secrets.DATABASE_APP_PASSWORD }}';"
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON \"${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}\".* TO '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%';"
+
+    - name: Update deployment file with database connection strings
+      run: |
+        sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+        sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+
+    - name: Update namespace file
+      run: |
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/.github/config/k8s_namespace.yml
+
+    - name: Update ingress file
+      run: |
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/.github/config/k8s_ingress.yml
+        sed -i 's|<BINN_STAGING_DNS>|${{ secrets.BINN_STAGING_DNS }}|g' $GITHUB_WORKSPACE/.github/config/k8s_ingress.yml
+
+    - name: Save DigitalOcean kubeconfig with short-lived credentials
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
+    
+    # - name: Deploy k8s tls issuer
+    #   run: kubectl apply -f $GITHUB_WORKSPACE/.github/config/k8s_tls_issuer.yml
+
+    - name: Deploy k8s namespace
+      run: kubectl apply -f $GITHUB_WORKSPACE/.github/config/k8s_namespace.yml
+
+    - name: Deploy k8s secret
+      run: kubectl apply -f $GITHUB_WORKSPACE/.github/config/k8s_secret.yml
+
+    - name: Deploy k8s service
+      run: kubectl apply -f $GITHUB_WORKSPACE/.github/config/k8s_deployment.yml
+
+    - name: Deploy k8s ingress
+      run: kubectl apply -f $GITHUB_WORKSPACE/.github/config/k8s_ingress.yml
+
+    - name: Verify deployment
+      run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
+  inform_pr_ingress_endpoint:
+    if: github.event_name == 'pull_request'
+    needs: k8s_deploy
+    env:
+      IMAGE_NAME: billing-server
+    name: Comment on PR with ingress endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          # Short name for current branch. For PRs, use target branch (base ref)
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GIT_BRANCH=${GIT_BRANCH//\./-}
+          GIT_BRANCH=${GIT_BRANCH//\//-}
+          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v1
+        
+        with:
+          message: '🎉 Ambiente k8s atualizado (${{ github.sha }}): http://${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}.${{ secrets.BINN_STAGING_DNS }}'
+          GITHUB_TOKEN: ${{ secrets.GH_PR_TOKEN }}

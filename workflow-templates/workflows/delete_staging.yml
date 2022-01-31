@@ -1,0 +1,47 @@
+name: k8s Destroy
+on: [push, delete]
+jobs:
+  delete_k8s_namespace:
+    if: ${{ github.event.ref_type == 'branch' }}
+    env:
+      IMAGE_NAME: billing-server
+    name: Remove k8s namespace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          GIT_BRANCH=${{ github.event.ref }}
+          GIT_BRANCH=${GIT_BRANCH//\./-}
+          GIT_BRANCH=${GIT_BRANCH//\//-}
+          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Create kubeconfig.yml
+        run: |
+            echo ${{ secrets.KUBECONFIG_YML }} | base64 -d >> kubeconfig.yml
+        shell: bash
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
+
+      - name: Remove k8s namespace
+        run: kubectl delete namespace ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
+
+      - name: Remove database schema
+        run: |
+          mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'drop schema "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}";'
+
+      - name: Clean up packages
+        uses: actions/delete-package-versions@v2
+        with: 
+          package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          min-versions-to-keep: 0
+          token: ${{ secrets.GH_SECRET }}
