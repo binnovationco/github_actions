@@ -59,9 +59,9 @@ jobs:
         run: |
           mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'drop schema "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}";'
 
-      - name: Clean up packages
-        uses: actions/delete-package-versions@v2
-        with: 
-          package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
-          min-versions-to-keep: 0
-          token: ${{ secrets.GH_SECRET }}
+      # - name: Clean up packages
+      #   uses: actions/delete-package-versions@v2
+      #   with: 
+      #     package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+      #     min-versions-to-keep: 0
+      #     token: ${{ secrets.GH_SECRET }}
