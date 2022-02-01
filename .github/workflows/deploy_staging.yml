@@ -4,7 +4,7 @@ on:
 jobs:
   push_to_registry:
     env:
-      IMAGE_NAME: ${{ secrets.APP_NAME }}
+      IMAGE_NAME: ${{ github.event.repository.name }}
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +45,7 @@ jobs:
     needs: push_to_registry
     name: Provisioning environment and database
     env:
-      IMAGE_NAME: ${{ secrets.APP_NAME }}
+      IMAGE_NAME: ${{ github.event.repository.name }}
     runs-on: ubuntu-latest
     steps:
     - name: Check out the repo
@@ -127,7 +127,7 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: k8s_deploy
     env:
-      IMAGE_NAME: ${{ secrets.APP_NAME }}
+      IMAGE_NAME: ${{ github.event.repository.name }}
     name: Comment on PR with ingress endpoint
     runs-on: ubuntu-latest
     steps:
