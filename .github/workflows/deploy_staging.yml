@@ -84,6 +84,12 @@ jobs:
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
+    - name: Check out github actions repo
+      uses: actions/checkout@master
+      with:
+        repository: binnovationco/github_actions
+        path: 'ghactions'
+
     - name: Set environment variables
       run: |
         # Short name for current branch. For PRs, use target branch (base ref)
@@ -99,12 +105,12 @@ jobs:
       shell: bash
         
     - name: Update deployment file with image info
-      run: TAG=${{ github.sha }} && sed -i 's|<IMAGE>|ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:'${TAG}'|' ./.github/config/k8s_deployment.yml
+      run: TAG=${{ github.sha }} && sed -i 's|<IMAGE>|ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:'${TAG}'|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file with github secret info
       run: |
-        sed -i 's|<GITHUB_SECRET>|${{ secrets.GH_SECRET }}|' ./.github/config/k8s_secret.yml
-        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' ./.github/config/k8s_secret.yml
+        sed -i 's|<GITHUB_SECRET>|${{ secrets.GH_SECRET }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
 
     - name: Configure mysql database and user
       run: |
@@ -114,41 +120,41 @@ jobs:
 
     - name: Update deployment file with database connection strings
       run: |
-        sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' ./.github/config/k8s_deployment.yml
-        sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' ./.github/config/k8s_deployment.yml
-        sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' ./.github/config/k8s_deployment.yml
-        sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' ./.github/config/k8s_deployment.yml
-        sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' ./.github/config/k8s_deployment.yml
-        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' ./.github/config/k8s_deployment.yml
-        sed -i 's|<CD_SHA>|${{ github.sha }}|g' ./.github/config/k8s_deployment.yml
-        sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' ./.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update namespace file
       run: |
-        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' ./.github/config/k8s_namespace.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
 
     - name: Update ingress file
       run: |
-        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' ./.github/config/k8s_ingress.yml
-        sed -i 's|<BINN_STAGING_DNS>|${{ secrets.BINN_STAGING_DNS }}|g' ./.github/config/k8s_ingress.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+        sed -i 's|<BINN_STAGING_DNS>|${{ secrets.BINN_STAGING_DNS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
     
     # - name: Deploy k8s tls issuer
-    #   run: kubectl apply -f ./.github/config/k8s_tls_issuer.yml
+    #   run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
 
     - name: Deploy k8s namespace
-      run: kubectl apply -f ./.github/config/k8s_namespace.yml
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
 
     - name: Deploy k8s secret
-      run: kubectl apply -f ./.github/config/k8s_secret.yml
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
 
     - name: Deploy k8s service
-      run: kubectl apply -f ./.github/config/k8s_deployment.yml
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Deploy k8s ingress
-      run: kubectl apply -f ./.github/config/k8s_ingress.yml
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
     - name: Verify deployment
       run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
