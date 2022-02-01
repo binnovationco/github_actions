@@ -4,7 +4,7 @@ jobs:
   delete_k8s_namespace:
     if: ${{ github.event.ref_type == 'branch' }}
     env:
-      IMAGE_NAME: billing-server
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
     name: Remove k8s namespace
     runs-on: ubuntu-latest
     steps:
