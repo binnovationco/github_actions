@@ -1,5 +1,25 @@
 name: k8s Destroy
-on: [push, delete]
+on:
+  workflow_call:
+    secrets:
+      APP_NAME:
+        required: true
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: true
+      KUBECONFIG_YML:
+        required: true
+      CLUSTER_NAME:
+        required: true
+      DATABASE_EXTERNAL_HOST:
+        required: true
+      DATABASE_PORT:
+        required: true
+      DATABASE_USERNAME:
+        required: true
+      DATABASE_PASSWORD:
+        required: true
+      GH_SECRET:
+        required: true
 jobs:
   delete_k8s_namespace:
     if: ${{ github.event.ref_type == 'branch' }}
