@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <APP_NAME>
+  namespace: <APP_NAME>
+  labels:
+    app: <APP_NAME>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <APP_NAME>
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: <APP_NAME>
+    spec:
+      containers:
+      - name: <APP_NAME>
+        image: <IMAGE>
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 100m
+        env:
+        - name: PORT
+          value: "3000"
+        - name: DATABASE_TYPE
+          value: "mysql"
+        - name: DATABASE_HOST
+          value: "<DATABASE_HOST>"
+        - name: DATABASE_PORT
+          value: "<DATABASE_PORT>"
+        - name: DATABASE_USERNAME
+          value: "<DATABASE_USERNAME>"
+        - name: DATABASE_PASSWORD
+          value: "<DATABASE_PASSWORD>"
+        - name: DATABASE_NAME
+          value: "<DATABASE_NAME>"
+        - name: DATABASE_SYNC
+          value: "false"
+        - name: NODE_ENV
+          value: "staging"
+        - name: CD_SHA
+          value: "<CD_SHA>"
+        - name: CRYPTO_SECRET
+          value: "<CRYPTO_SECRET>"
+      imagePullSecrets:
+      - name: dockerconfigjson-github-com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <APP_NAME>-service
+  namespace: <APP_NAME>
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 3000
+    # - name: https
+    #   port: 443
+    #   protocol: TCP
+    #   targetPort: 3000
+  selector:
+    app: <APP_NAME>
+    # app.kubernetes.io/name: ingress-nginx
+    # app.kubernetes.io/instance: ingress-nginx
+    # app.kubernetes.io/component: controller
