@@ -4,7 +4,7 @@ on:
 jobs:
   push_to_registry:
     env:
-      IMAGE_NAME: ${{ github.event.repository.name }}
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
@@ -35,17 +35,17 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ github.sha }}
       
-      # - name: Clean up old packages
-      #   uses: actions/delete-package-versions@v2
-      #   with: 
-      #     package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
-      #     min-versions-to-keep: 3
-      #     token: ${{ secrets.GH_PR_TOKEN }}
+      - name: Clean up old packages
+        uses: actions/delete-package-versions@v2
+        with: 
+          package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          min-versions-to-keep: 3
+          token: ${{ secrets.GH_PR_TOKEN }}
   k8s_deploy:
     needs: push_to_registry
     name: Provisioning environment and database
     env:
-      IMAGE_NAME: ${{ github.event.repository.name }}
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
     runs-on: ubuntu-latest
     steps:
     - name: Check out the repo
@@ -127,7 +127,7 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: k8s_deploy
     env:
-      IMAGE_NAME: ${{ github.event.repository.name }}
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
     name: Comment on PR with ingress endpoint
     runs-on: ubuntu-latest
     steps:
