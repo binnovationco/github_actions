@@ -17,6 +17,7 @@ on:
       - '.dockerignore'
       - 'Dockerfile'
       - '.github/**'
+  workflow_call:
 jobs:
   push_to_registry:
     env:
