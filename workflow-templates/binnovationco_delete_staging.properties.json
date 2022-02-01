@@ -1,0 +1,13 @@
+{
+  "name": "B.innovation Delete Staging Workflow",
+  "description": "Workflow para remover um ambiente de staging",
+  "iconName": "binn",
+  "categories": [
+    "NodeJS",
+    "JavaScript",
+    "TypeScript"
+  ],
+  "filePatterns": [
+    ".github/workflows/deploy_staging.yml"
+  ]
+}

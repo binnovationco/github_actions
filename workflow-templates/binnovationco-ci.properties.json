@@ -1,0 +1,13 @@
+{
+  "name": "B.innovation CI Workflow",
+  "description": "Workflow para executar testes unitários e de integração",
+  "iconName": "binn",
+  "categories": [
+    "NodeJS",
+    "JavaScript",
+    "TypeScript"
+  ],
+  "filePatterns": [
+    "package.json$"
+  ]
+}
