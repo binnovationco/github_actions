@@ -35,12 +35,12 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ github.sha }}
       
-      - name: Clean up old packages
-        uses: actions/delete-package-versions@v2
-        with: 
-          package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
-          min-versions-to-keep: 3
-          token: ${{ secrets.GH_PR_TOKEN }}
+      # - name: Clean up old packages
+      #   uses: actions/delete-package-versions@v2
+      #   with: 
+      #     package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+      #     min-versions-to-keep: 3
+      #     token: ${{ secrets.GH_PR_TOKEN }}
   k8s_deploy:
     needs: push_to_registry
     name: Provisioning environment and database
