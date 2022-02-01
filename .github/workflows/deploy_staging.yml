@@ -1,6 +1,35 @@
 name: k8s Pipeline
 on:
   workflow_call:
+    secrets:
+      BINN_STAGING_DNS:
+        required: true
+      CLUSTER_NAME:
+        required: true
+      CRYPTO_SECRET:
+        required: true
+      DATABASE_APP_PASSWORD:
+        required: true
+      DATABASE_EXTERNAL_HOST:
+        required: true
+      DATABASE_HOST:
+        required: true
+      DATABASE_PASSWORD:
+        required: true
+      DATABASE_PORT:
+        required: true
+      DATABASE_USERNAME:
+        required: true
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: true
+      GH_PR_TOKEN:
+        required: true
+      GH_SECRET:
+        required: true
+      KUBECONFIG_YML:
+        required: true
+      APP_NAME:
+        required: true
 jobs:
   push_to_registry:
     env:
