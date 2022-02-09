@@ -20,7 +20,7 @@ on:
       CLUSTER_NAME:
         required: true
       CRYPTO_SECRET:
-        required: true
+        required: false
       DATABASE_APP_PASSWORD:
         required: true
       DATABASE_EXTERNAL_HOST:
