@@ -155,29 +155,10 @@ jobs:
       uses: ./.github/workflows/setup_nestjs.yml
       with:
         need_database: ${{ inputs.need_database }}
-      secrets:
-        CRYPTO_SECRET: ${{ secrets.CRYPTO_SECRET }}
-        DATABASE_APP_PASSWORD: ${{ secrets.DATABASE_APP_PASSWORD }}
-        DATABASE_EXTERNAL_HOST: ${{ secrets.DATABASE_EXTERNAL_HOST }}
-        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-        DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-        APP_NAME: ${{ secrets.APP_NAME }}
-        FACEBOOK_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
-        FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
-        FACEBOOK_REDIRECT_URL: ${{ secrets.FACEBOOK_REDIRECT_URL }}
-        FACEBOOK_PROFILE_FIELDS: ${{ secrets.FACEBOOK_PROFILE_FIELDS }}
-        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        GOOGLE_REDIRECT_URL: ${{ secrets.GOOGLE_REDIRECT_URL }}
-        GOOGLE_SCOPES: ${{ secrets.GOOGLE_SCOPES }}
 
     - name: Setup for NextJS
       if: inputs.framework == 'nextjs'
       uses: ./.github/workflows/setup_nextjs.yml
-      secrets:
-        APP_NAME: ${{ secrets.APP_NAME }}
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
