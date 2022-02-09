@@ -144,14 +144,14 @@ jobs:
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|FACEBOOK_APP_ID|${{ secrets.FACEBOOK_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|FACEBOOK_APP_SECRET|${{ secrets.FACEBOOK_APP_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|FACEBOOK_REDIRECT_URL|${{ secrets.FACEBOOK_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|FACEBOOK_PROFILE_FIELDS|${{ secrets.FACEBOOK_PROFILE_FIELDS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|GOOGLE_CLIENT_ID|${{ secrets.GOOGLE_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|GOOGLE_CLIENT_SECRET|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|GOOGLE_REDIRECT_URL|${{ secrets.GOOGLE_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|GOOGLE_SCOPES|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_APP_ID>|${{ secrets.FACEBOOK_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_APP_SECRET>|${{ secrets.FACEBOOK_APP_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_REDIRECT_URL>|${{ secrets.FACEBOOK_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_PROFILE_FIELDS>|${{ secrets.FACEBOOK_PROFILE_FIELDS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_CLIENT_ID>|${{ secrets.GOOGLE_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_CLIENT_SECRET>|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_REDIRECT_URL>|${{ secrets.GOOGLE_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_SCOPES>|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update namespace file
       run: |
