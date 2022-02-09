@@ -71,7 +71,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          # Short name for current branch. For PRs, use target branch (base ref)
+
           GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           GIT_BRANCH=${GIT_BRANCH//\./-}
           GIT_BRANCH=${GIT_BRANCH//\//-}
@@ -122,7 +122,6 @@ jobs:
 
     - name: Set environment variables
       run: |
-        # Short name for current branch. For PRs, use target branch (base ref)
         GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
         GIT_BRANCH=${GIT_BRANCH//\./-}
         GIT_BRANCH=${GIT_BRANCH//\//-}
@@ -164,34 +163,33 @@ jobs:
     name: Setting up for NestJS
     runs-on: ubuntu-latest
     steps:
-    - name: Set environment variables
-    run: |
-      # Short name for current branch. For PRs, use target branch (base ref)
-      GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-      GIT_BRANCH=${GIT_BRANCH//\./-}
-      GIT_BRANCH=${GIT_BRANCH//\//-}
-      GIT_BRANCH=${GIT_BRANCH//\_/-}
-      echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-      
-    - name: Update deployment file
-    if: inputs.framework == 'nestjs'
-    run: |
-      sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<FACEBOOK_APP_ID>|${{ secrets.FACEBOOK_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<FACEBOOK_APP_SECRET>|${{ secrets.FACEBOOK_APP_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<FACEBOOK_REDIRECT_URL>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}.${{ secrets.FACEBOOK_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<FACEBOOK_PROFILE_FIELDS>|${{ secrets.FACEBOOK_PROFILE_FIELDS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<GOOGLE_CLIENT_ID>|${{ secrets.GOOGLE_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<GOOGLE_CLIENT_SECRET>|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<GOOGLE_REDIRECT_URL>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}.${{ secrets.GOOGLE_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<GOOGLE_SCOPES>|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+      - name: Set environment variables
+        run: |
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GIT_BRANCH=${GIT_BRANCH//\./-}
+          GIT_BRANCH=${GIT_BRANCH//\//-}
+          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+        
+      - name: Update deployment file
+        if: inputs.framework == 'nestjs'
+        run: |
+          sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<FACEBOOK_APP_ID>|${{ secrets.FACEBOOK_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<FACEBOOK_APP_SECRET>|${{ secrets.FACEBOOK_APP_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<FACEBOOK_REDIRECT_URL>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}.${{ secrets.FACEBOOK_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<FACEBOOK_PROFILE_FIELDS>|${{ secrets.FACEBOOK_PROFILE_FIELDS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<GOOGLE_CLIENT_ID>|${{ secrets.GOOGLE_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<GOOGLE_CLIENT_SECRET>|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<GOOGLE_REDIRECT_URL>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}.${{ secrets.GOOGLE_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<GOOGLE_SCOPES>|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
   nextjs_setup:
     needs: k8s_setup
     env:
@@ -199,20 +197,19 @@ jobs:
     name: Setting up for NextJS
     runs-on: ubuntu-latest
     steps:
-    - name: Set environment variables
-    run: |
-      # Short name for current branch. For PRs, use target branch (base ref)
-      GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-      GIT_BRANCH=${GIT_BRANCH//\./-}
-      GIT_BRANCH=${GIT_BRANCH//\//-}
-      GIT_BRANCH=${GIT_BRANCH//\_/-}
-      echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-      
-    - name: Update deployment file
-    if: inputs.framework == 'nestjs' || inputs.framework == 'ionic'
-    run: |
-      sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-      sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+      - name: Set environment variables
+        run: |
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GIT_BRANCH=${GIT_BRANCH//\./-}
+          GIT_BRANCH=${GIT_BRANCH//\//-}
+          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+        
+      - name: Update deployment file
+        if: inputs.framework == 'nestjs' || inputs.framework == 'ionic'
+        run: |
+          sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+          sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
   k8s_deploy:
     needs: k8s_setup
     env:
@@ -220,35 +217,34 @@ jobs:
     name: Comment on PR with ingress endpoint
     runs-on: ubuntu-latest
     steps:
-    - name: Set environment variables
-    run: |
-      # Short name for current branch. For PRs, use target branch (base ref)
-      GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-      GIT_BRANCH=${GIT_BRANCH//\./-}
-      GIT_BRANCH=${GIT_BRANCH//\//-}
-      GIT_BRANCH=${GIT_BRANCH//\_/-}
-      echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          GIT_BRANCH=${GIT_BRANCH//\./-}
+          GIT_BRANCH=${GIT_BRANCH//\//-}
+          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
 
-    - name: Save DigitalOcean kubeconfig with short-lived credentials
-    run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
-  
-    # - name: Deploy k8s tls issuer
-    #   run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
+    
+      # - name: Deploy k8s tls issuer
+      #   run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
 
-    - name: Deploy k8s namespace
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
+      - name: Deploy k8s namespace
+        run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
 
-    - name: Deploy k8s secret
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+      - name: Deploy k8s secret
+        run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
 
-    - name: Deploy k8s service
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+      - name: Deploy k8s service
+        run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
-    - name: Deploy k8s ingress
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+      - name: Deploy k8s ingress
+        run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
-    - name: Verify deployment
-      run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
+      - name: Verify deployment
+        run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
   inform_pr_ingress_endpoint:
     if: github.event_name == 'pull_request'
     needs: k8s_setup
@@ -259,7 +255,6 @@ jobs:
     steps:
       - name: Set environment variables
         run: |
-          # Short name for current branch. For PRs, use target branch (base ref)
           GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           GIT_BRANCH=${GIT_BRANCH//\./-}
           GIT_BRANCH=${GIT_BRANCH//\//-}
