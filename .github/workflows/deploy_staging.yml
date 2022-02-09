@@ -30,6 +30,22 @@ on:
         required: true
       APP_NAME:
         required: true
+      FACEBOOK_APP_ID:
+        required: false
+      FACEBOOK_APP_SECRET:
+        required: false
+      FACEBOOK_REDIRECT_URL:
+        required: false
+      FACEBOOK_PROFILE_FIELDS:
+        required: false
+      GOOGLE_CLIENT_ID:
+        required: false
+      GOOGLE_CLIENT_SECRET:
+        required: false
+      GOOGLE_REDIRECT_URL:
+        required: false
+      GOOGLE_SCOPES:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -118,7 +134,7 @@ jobs:
         mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%' IDENTIFIED BY '${{ secrets.DATABASE_APP_PASSWORD }}';"
         mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON \"${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}\".* TO '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%';"
 
-    - name: Update deployment file with database connection strings
+    - name: Update deployment file
       run: |
         sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
@@ -128,6 +144,14 @@ jobs:
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|FACEBOOK_APP_ID|${{ secrets.FACEBOOK_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|FACEBOOK_APP_SECRET|${{ secrets.FACEBOOK_APP_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|FACEBOOK_REDIRECT_URL|${{ secrets.FACEBOOK_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|FACEBOOK_PROFILE_FIELDS|${{ secrets.FACEBOOK_PROFILE_FIELDS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|GOOGLE_CLIENT_ID|${{ secrets.GOOGLE_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|GOOGLE_CLIENT_SECRET|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|GOOGLE_REDIRECT_URL|${{ secrets.GOOGLE_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|GOOGLE_SCOPES|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update namespace file
       run: |
