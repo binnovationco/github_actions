@@ -35,6 +35,8 @@ spec:
           value: "3000"
         - name: DATABASE_TYPE
           value: "mysql"
+        - name: APP_NAME
+          value: "<APP_NAME>"
         - name: DATABASE_HOST
           value: "<DATABASE_HOST>"
         - name: DATABASE_PORT
