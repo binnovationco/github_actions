@@ -179,7 +179,7 @@ jobs:
         sed -i 's|<GOOGLE_SCOPES>|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
-      if: inputs.framework == 'nestjs' || inputs.framework == 'ionic'
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
       run: |
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
