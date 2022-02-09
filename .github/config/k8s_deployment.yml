@@ -54,21 +54,21 @@ spec:
         - name: CRYPTO_SECRET
           value: "<CRYPTO_SECRET>"
         - name: FACEBOOK_APP_ID
-          values: "<FACEBOOK_APP_ID>"
+          value: "<FACEBOOK_APP_ID>"
         - name: FACEBOOK_APP_SECRET
-          values: "<FACEBOOK_APP_SECRET>"
+          value: "<FACEBOOK_APP_SECRET>"
         - name: FACEBOOK_REDIRECT_URL
-          values: "<FACEBOOK_REDIRECT_URL>"
+          value: "<FACEBOOK_REDIRECT_URL>"
         - name: FACEBOOK_PROFILE_FIELDS
-          values: "<FACEBOOK_PROFILE_FIELDS>"
+          value: "<FACEBOOK_PROFILE_FIELDS>"
         - name: GOOGLE_CLIENT_ID
-          values: "<GOOGLE_CLIENT_ID>"
+          value: "<GOOGLE_CLIENT_ID>"
         - name: GOOGLE_CLIENT_SECRET
-          values: "<GOOGLE_CLIENT_SECRET>"
+          value: "<GOOGLE_CLIENT_SECRET>"
         - name: GOOGLE_REDIRECT_URL
-          values: "<GOOGLE_REDIRECT_URL>"
+          value: "<GOOGLE_REDIRECT_URL>"
         - name: GOOGLE_SCOPES
-          values: "<GOOGLE_SCOPES>"
+          value: "<GOOGLE_SCOPES>"
       imagePullSecrets:
       - name: dockerconfigjson-github-com
 ---
