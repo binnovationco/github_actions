@@ -14,6 +14,10 @@ on:
         required: false
         type: boolean
         default: false
+      cloud:
+        required: false
+        type: string
+        default: 'digitalocean'
     secrets:
       BINN_STAGING_DNS:
         required: true
@@ -116,6 +120,7 @@ jobs:
         path: 'ghactions'
 
     - name: Install doctl
+      if: inputs.cloud == 'digitalocean'
       uses: digitalocean/action-doctl@v2
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
@@ -185,7 +190,16 @@ jobs:
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
+      if: inputs.cloud == 'digitalocean'
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
+
+    - name: Authenticate with Azure
+      if: inputs.cloud == 'azure'
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: ${{ secrets.CLUSTER_NAME }}
+        resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
     
     # - name: Deploy k8s tls issuer
     #   run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
