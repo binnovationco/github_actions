@@ -65,6 +65,8 @@ on:
         required: false
       AZURE_CREDENTIALS:
         required: false
+      CLUSTER_RESOURCE_GROUP:
+        required: false
 jobs:
   push_to_registry:
     env:
