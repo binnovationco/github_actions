@@ -38,7 +38,7 @@ on:
       DATABASE_USERNAME:
         required: false
       DIGITALOCEAN_ACCESS_TOKEN:
-        required: true
+        required: false
       GH_PR_TOKEN:
         required: true
       GH_SECRET:
@@ -62,6 +62,8 @@ on:
       GOOGLE_REDIRECT_URL:
         required: false
       GOOGLE_SCOPES:
+        required: false
+      AZURE_CREDENTIALS:
         required: false
 jobs:
   push_to_registry:
