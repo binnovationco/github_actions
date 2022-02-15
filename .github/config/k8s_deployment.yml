@@ -69,6 +69,11 @@ spec:
           value: "<GOOGLE_REDIRECT_URL>"
         - name: GOOGLE_SCOPES
           value: "<GOOGLE_SCOPES>"
+        - name: JWT_SECRET_KEY
+          value: "<JWT_SECRET_KEY>"
+        - name: JWT_TOKEN_EXPIRATION_TIME
+          value: "<JWT_TOKEN_EXPIRATION_TIME>"
+        
       imagePullSecrets:
       - name: dockerconfigjson-github-com
 ---
