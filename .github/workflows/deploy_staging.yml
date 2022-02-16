@@ -217,7 +217,7 @@ jobs:
       with:
         envkey_API_URL: ${{ secrets.API_URL }}
         envkey_NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
-        directory: $GITHUB_WORKSPACE
+        directory: ${{ github.workspace }}
         file_name: .env.local
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
