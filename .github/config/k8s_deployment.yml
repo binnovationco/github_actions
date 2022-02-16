@@ -85,7 +85,6 @@ metadata:
   name: <APP_NAME>-service
   namespace: <APP_NAME>
 spec:
-  type: LoadBalancer
   ports:
     - name: http
       port: 80
