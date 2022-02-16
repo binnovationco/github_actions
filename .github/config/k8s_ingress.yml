@@ -15,7 +15,7 @@ spec:
   -  host: <APP_NAME>.<BINN_STAGING_DNS>
      http:
       paths:
-        backend:
+        - backend:
           service:
             name: <APP_NAME>-service
             port:
