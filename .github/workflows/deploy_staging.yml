@@ -73,6 +73,12 @@ on:
         required: false
       CORREIO_SOAP_WSDL:
         required: false
+      ACTIVE_CAMPAIGN_URL:
+        required: false
+      ACTIVE_CAMPAIGN_TOKEN:
+        required: false
+      API_URL:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -195,6 +201,9 @@ jobs:
         sed -i 's|<JWT_TOKEN_EXPIRATION_TIME>|${{ secrets.JWT_TOKEN_EXPIRATION_TIME }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<JWT_SECRET_KEY>|${{ secrets.JWT_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CORREIO_SOAP_WSDL>|${{ secrets.CORREIO_SOAP_WSDL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<ACTIVE_CAMPAIGN_URL>|${{ secrets.ACTIVE_CAMPAIGN_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<ACTIVE_CAMPAIGN_TOKEN>|${{ secrets.ACTIVE_CAMPAIGN_TOKEN }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<API_URL>|${{ secrets.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'

@@ -75,6 +75,12 @@ spec:
           value: "<JWT_TOKEN_EXPIRATION_TIME>"
         - name: CORREIO_SOAP_WSDL
           value: "<CORREIO_SOAP_WSDL>"
+        - name: ACTIVE_CAMPAIGN_URL
+          value: "<ACTIVE_CAMPAIGN_URL>"
+        - name: ACTIVE_CAMPAIGN_TOKEN
+          value: "<ACTIVE_CAMPAIGN_TOKEN>"
+        - name: NEXT_PUBLIC_API_URL
+          value: "<API_URL>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
