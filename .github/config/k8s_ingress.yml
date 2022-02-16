@@ -15,6 +15,10 @@ spec:
   -  host: <APP_NAME>.<BINN_STAGING_DNS>
      http:
       paths:
-        - backend:
-          serviceName: <APP_NAME>-service
-          servicePort: 3000
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: <APP_NAME>-service
+            port:
+              number: 3000
