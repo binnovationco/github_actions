@@ -211,14 +211,6 @@ jobs:
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
-    - name: Make .env.local file
-      if: inputs.framework == 'nextjs'
-      uses: SpicyPizza/create-envfile@v1.3
-      with:
-        envkey_API_URL: ${{ secrets.API_URL }}
-        envkey_NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
-        file_name: .env.local
-
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
