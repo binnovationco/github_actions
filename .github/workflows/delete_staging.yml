@@ -22,7 +22,7 @@ on:
         required: true
 jobs:
   delete_k8s_namespace:
-    if: ${{ github.event.ref_type == 'branch' || (${{ GITHUB_EVENT_NAME }} == 'pull_request' && ${{ GITHUB_EVENT_PAYLOAD_ACTION }} == 'closed') }}
+    if: ${{ github.event.ref_type == 'branch' }} || (${{ GITHUB_EVENT_NAME }} == 'pull_request' && ${{ GITHUB_EVENT_PAYLOAD_ACTION }} == 'closed') }}
     env:
       IMAGE_NAME: ${{ secrets.APP_NAME }}
     name: Remove k8s namespace
