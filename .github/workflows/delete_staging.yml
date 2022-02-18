@@ -22,7 +22,7 @@ on:
         required: true
 jobs:
   delete_k8s_namespace:
-    if: ${{ github.event.ref_type == 'branch' }}
+    if: ${{ github.event.ref_type == 'branch' || (${{ GITHUB_EVENT_NAME }} == 'pull_request' && ${{ GITHUB_EVENT_PAYLOAD_ACTION }} == 'closed') }}
     env:
       IMAGE_NAME: ${{ secrets.APP_NAME }}
     name: Remove k8s namespace
@@ -30,10 +30,15 @@ jobs:
     steps:
       - name: Set environment variables
         run: |
-          GIT_BRANCH=${{ github.event.ref }}
-          GIT_BRANCH=${GIT_BRANCH//\./-}
-          GIT_BRANCH=${GIT_BRANCH//\//-}
-          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+          then
+              GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          else
+              GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+              GIT_BRANCH=${GIT_BRANCH//\./-}
+              GIT_BRANCH=${GIT_BRANCH//\//-}
+              GIT_BRANCH=${GIT_BRANCH//\_/-}
+          fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
 
       - name: Check out the repo
