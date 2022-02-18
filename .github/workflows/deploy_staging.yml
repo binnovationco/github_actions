@@ -92,10 +92,15 @@ jobs:
       - name: Set environment variables
         run: |
           # Short name for current branch. For PRs, use target branch (base ref)
-          GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-          GIT_BRANCH=${GIT_BRANCH//\./-}
-          GIT_BRANCH=${GIT_BRANCH//\//-}
-          GIT_BRANCH=${GIT_BRANCH//\_/-}
+          if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+          then
+              GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          else
+              GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+              GIT_BRANCH=${GIT_BRANCH//\./-}
+              GIT_BRANCH=${GIT_BRANCH//\//-}
+              GIT_BRANCH=${GIT_BRANCH//\_/-}
+          fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
       
       - name: Log in to GitHub Docker Registry
