@@ -231,7 +231,6 @@ jobs:
         sed -i 's|<CORREIO_SOAP_WSDL>|${{ secrets.CORREIO_SOAP_WSDL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<ACTIVE_CAMPAIGN_URL>|${{ secrets.ACTIVE_CAMPAIGN_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<ACTIVE_CAMPAIGN_TOKEN>|${{ secrets.ACTIVE_CAMPAIGN_TOKEN }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|<API_URL>|${{ env.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES>|${{ secrets.RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<TOKEN_ACTIVATION_TRIES_LIMIT>|${{ secrets.TOKEN_ACTIVATION_TRIES_LIMIT }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<SEND_GRID_API_KEY>|${{ secrets.SEND_GRID_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
@@ -243,6 +242,7 @@ jobs:
       run: |
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<API_URL>|${{ env.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
