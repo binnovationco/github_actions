@@ -120,11 +120,11 @@ jobs:
           echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
           echo ${{ env.API_URL_STR }}
 
-          API_URL_VALUE=${{ secrets[env.API_URL_STR] }}
+          API_URL_VALUE=${{ secrets[API_URL_STR] }}
           if [ ! -z "${!API_URL_VALUE+x}" ]; then
-          SECRET_BRANCH_NAME=${!API_URL_VALUE}
+            SECRET_BRANCH_NAME=${!API_URL_VALUE}
           else
-          SECRET_BRANCH_NAME=main
+            SECRET_BRANCH_NAME=main
           fi
           API_URL=${{ secrets.API_NAME }}-$SECRET_BRANCH_NAME.${{ secrets.BINN_STAGING_DNS }}
           echo "API_URL=$API_URL" >> $GITHUB_ENV
