@@ -111,7 +111,7 @@ jobs:
               GIT_BRANCH=${GIT_BRANCH//\_/-}
           fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-      
+          API_URL=${ secrets.API_NAME }-$(tern -z ${ secrets['API_BRANCH']_$GIT_BRANCH } ${ secrets['API_BRANCH-$GIT_BRANCH'] } "main")
       - name: Log in to GitHub Docker Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
