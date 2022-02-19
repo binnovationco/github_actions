@@ -113,7 +113,7 @@ jobs:
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
           
           GIT_BRANCH_FORMATTED=${GIT_BRANCH//-/_}
-          API_URL_VALUE="SECRETS_API_BRANCH_$GIT_BRANCH"
+          API_URL_VALUE="SECRETS_API_BRANCH_$GIT_BRANCH_FORMATTED"
           if [ ! -z "${!API_URL_VALUE+x}" ]; then
           SECRET_BRANCH_NAME=${!API_URL_VALUE}
           else
