@@ -123,9 +123,9 @@ jobs:
           echo ${{ env.API_URL_STR }}
 
           if [ ! -z "${{ secrets[env.API_URL_STR] }}" ]; then
-            API_URL=${{ secrets.API_NAME }}-${{ secrets[env.API_URL_STR] }}.${{ secrets.BINN_STAGING_DNS }}
-          else
             API_URL=${{ secrets.API_NAME }}-main.${{ secrets.BINN_STAGING_DNS }}
+          else
+            API_URL=${{ secrets.API_NAME }}-${{ secrets[env.API_URL_STR] }}.${{ secrets.BINN_STAGING_DNS }}
           fi
           echo "API_URL=$API_URL" >> $GITHUB_ENV
       - name: Log in to GitHub Docker Registry
