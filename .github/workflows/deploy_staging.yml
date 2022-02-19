@@ -122,13 +122,11 @@ jobs:
         run: |
           echo ${{ env.API_URL_STR }}
 
-          API_URL_VALUE=${{ secrets[env.API_URL_STR] }}
-          if [ ! -z "${!API_URL_VALUE+x}" ]; then
-            SECRET_BRANCH_NAME=${!API_URL_VALUE}
+          if [ ! -z "${{ secrets[env.API_URL_STR] }}" ]; then
+            API_URL=${{ secrets.API_NAME }}-${{ secrets[env.API_URL_STR] }}.${{ secrets.BINN_STAGING_DNS }}
           else
-            SECRET_BRANCH_NAME=main
+            API_URL=${{ secrets.API_NAME }}-main.${{ secrets.BINN_STAGING_DNS }}
           fi
-          API_URL=${{ secrets.API_NAME }}-$SECRET_BRANCH_NAME.${{ secrets.BINN_STAGING_DNS }}
           echo "API_URL=$API_URL" >> $GITHUB_ENV
       - name: Log in to GitHub Docker Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
