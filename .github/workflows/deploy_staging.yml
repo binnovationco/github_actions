@@ -118,9 +118,11 @@ jobs:
           echo ${API_URL_STR^^}
 
           echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
           echo ${{ env.API_URL_STR }}
 
-          API_URL_VALUE=${{ secrets[API_URL_STR] }}
+          API_URL_VALUE=${{ secrets[env.API_URL_STR] }}
           if [ ! -z "${!API_URL_VALUE+x}" ]; then
             SECRET_BRANCH_NAME=${!API_URL_VALUE}
           else
