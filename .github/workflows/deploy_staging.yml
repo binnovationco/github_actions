@@ -115,7 +115,7 @@ jobs:
           GIT_BRANCH_FORMATTED=${GIT_BRANCH//-/_}
           API_URL_STR="SECRETS_API_BRANCH_$GIT_BRANCH_FORMATTED"
 
-          echo "API_URL_STR=$API_URL_STR" >> $GITHUB_ENV
+          echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
 
           API_URL_VALUE=${{ secrets[env.API_URL_STR] }}
           if [ ! -z "${!API_URL_VALUE+x}" ]; then
