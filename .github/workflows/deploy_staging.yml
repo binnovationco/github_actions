@@ -111,7 +111,15 @@ jobs:
               GIT_BRANCH=${GIT_BRANCH//\_/-}
           fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-          API_URL=${ secrets.API_NAME }-$(tern -z ${ secrets['API_BRANCH']_$GIT_BRANCH } ${ secrets['API_BRANCH-$GIT_BRANCH'] } "main")
+          
+          API_URL_VALUE="SECRETS_API_BRANCH_$GIT_BRANCH"
+          if [ ! -z "${!API_URL_VALUE+x}" ]; then
+          SECRET_BRANCH_NAME=${!API_URL_VALUE}
+          else
+          SECRET_BRANCH_NAME=main
+          fi
+          API_URL=$SECRETS_API_NAME-$SECRET_BRANCH_NAME.$SECRETS_BINN_STAGING_DNS
+          echo "API_URL=$API_URL" >> $GITHUB_ENV
       - name: Log in to GitHub Docker Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -221,7 +229,7 @@ jobs:
         sed -i 's|<CORREIO_SOAP_WSDL>|${{ secrets.CORREIO_SOAP_WSDL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<ACTIVE_CAMPAIGN_URL>|${{ secrets.ACTIVE_CAMPAIGN_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<ACTIVE_CAMPAIGN_TOKEN>|${{ secrets.ACTIVE_CAMPAIGN_TOKEN }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|<API_URL>|${{ secrets.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<API_URL>|${{ env.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES>|${{ secrets.RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<TOKEN_ACTIVATION_TRIES_LIMIT>|${{ secrets.TOKEN_ACTIVATION_TRIES_LIMIT }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<SEND_GRID_API_KEY>|${{ secrets.SEND_GRID_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
