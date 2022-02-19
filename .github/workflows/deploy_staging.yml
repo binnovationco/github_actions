@@ -79,6 +79,16 @@ on:
         required: false
       API_URL:
         required: false
+      RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES:
+        required: false
+      TOKEN_ACTIVATION_TRIES_LIMIT:
+        required: false
+      SEND_GRID_API_KEY:
+        required: false
+      MAIL_FROM:
+        required: false
+      MAIL_PROVIDER:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -212,6 +222,11 @@ jobs:
         sed -i 's|<ACTIVE_CAMPAIGN_URL>|${{ secrets.ACTIVE_CAMPAIGN_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<ACTIVE_CAMPAIGN_TOKEN>|${{ secrets.ACTIVE_CAMPAIGN_TOKEN }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<API_URL>|${{ secrets.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES>|${{ secrets.RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<TOKEN_ACTIVATION_TRIES_LIMIT>|${{ secrets.TOKEN_ACTIVATION_TRIES_LIMIT }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<SEND_GRID_API_KEY>|${{ secrets.SEND_GRID_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<MAIL_FROM>|${{ secrets.MAIL_FROM }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<MAIL_PROVIDER>|${{ secrets.MAIL_PROVIDER }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'

@@ -83,6 +83,16 @@ spec:
           value: "<API_URL>"
         - name: API_URL
           value: "<API_URL>"
+        - name: RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES
+          value: "<RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES>"
+        - name: TOKEN_ACTIVATION_TRIES_LIMIT
+          value: "<TOKEN_ACTIVATION_TRIES_LIMIT>"
+        - name: SEND_GRID_API_KEY
+          value: "<SEND_GRID_API_KEY>"
+        - name: MAIL_FROM
+          value: "<MAIL_FROM>"
+        - name: MAIL_PROVIDER
+          value: "<MAIL_PROVIDER>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
