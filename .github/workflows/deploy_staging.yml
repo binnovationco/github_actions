@@ -118,6 +118,7 @@ jobs:
           echo ${API_URL_STR^^}
 
           echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
+          echo ${{ secrets.API_BRANCH_PR_8 }}
 
           API_URL_VALUE=${{ secrets[env.API_URL_STR] }}
           if [ ! -z "${!API_URL_VALUE+x}" ]; then
