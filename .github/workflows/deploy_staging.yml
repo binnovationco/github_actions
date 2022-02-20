@@ -104,11 +104,13 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: api_url
+
       - name: Creating api url file
+        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
         shell: bash
         run: |
-          value=`cat api_url/api_url.txt`
-          echo The result is $value
+          API_URL=`cat api_url/api_url.txt`
+          echo "NEXT_PUBLIC_API_URL=${API_URL}" >> .env.local
 
       - name: Set environment variables
         run: |
