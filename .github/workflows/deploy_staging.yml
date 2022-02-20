@@ -186,11 +186,10 @@ jobs:
     - name: Set environment variables
       run: |
         if [ ! -z "${{ secrets[env.API_URL_STR] }}" ]; then
-          API_URL=${{ secrets.API_NAME }}-main.${{ secrets.BINN_STAGING_DNS }}
+          echo "${{ secrets.API_NAME }}-main.${{ secrets.BINN_STAGING_DNS }}" >> $GITHUB_ENV
         else
-          API_URL=${{ secrets.API_NAME }}-${{ secrets[env.API_URL_STR] }}.${{ secrets.BINN_STAGING_DNS }}
+          echo "${{ secrets.API_NAME }}-${{ secrets[env.API_URL_STR] }}.${{ secrets.BINN_STAGING_DNS }}" >> $GITHUB_ENV
         fi
-        echo "API_URL=$API_URL" >> $GITHUB_ENV
 
     - name: Create kubeconfig.yml
       run: |
