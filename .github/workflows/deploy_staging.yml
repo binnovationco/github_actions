@@ -168,21 +168,21 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
     - name: Set environment variables
-        run: |
-          if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
-          then
-              GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          else
-              GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-              GIT_BRANCH=${GIT_BRANCH//\./-}
-              GIT_BRANCH=${GIT_BRANCH//\//-}
-              GIT_BRANCH=${GIT_BRANCH//\_/-}
-          fi
-          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-          
-          GIT_BRANCH_FORMATTED=${GIT_BRANCH//-/_}
-          API_URL_STR="API_BRANCH_$GIT_BRANCH_FORMATTED"
-          echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
+      run: |
+        if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+        then
+            GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+        else
+            GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+            GIT_BRANCH=${GIT_BRANCH//\./-}
+            GIT_BRANCH=${GIT_BRANCH//\//-}
+            GIT_BRANCH=${GIT_BRANCH//\_/-}
+        fi
+        echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+        
+        GIT_BRANCH_FORMATTED=${GIT_BRANCH//-/_}
+        API_URL_STR="API_BRANCH_$GIT_BRANCH_FORMATTED"
+        echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
     - name: Set environment variables
       run: |
         if [ ! -z "${{ secrets[env.API_URL_STR] }}" ]; then
