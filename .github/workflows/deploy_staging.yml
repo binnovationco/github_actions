@@ -77,8 +77,6 @@ on:
         required: false
       ACTIVE_CAMPAIGN_TOKEN:
         required: false
-      API_URL:
-        required: false
       RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES:
         required: false
       TOKEN_ACTIVATION_TRIES_LIMIT:
@@ -168,6 +166,19 @@ jobs:
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
+    - name: Download api url file
+        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+        uses: actions/download-artifact@v1
+        with:
+          name: api_url
+
+    - name: Creating api url file
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      shell: bash
+      run: |
+        API_URL=`cat api_url/api_url.txt`
+        echo "API_URL=$API_URL" >> $GITHUB_ENV
+
     - name: Set environment variables
       run: |
         if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
@@ -180,17 +191,6 @@ jobs:
             GIT_BRANCH=${GIT_BRANCH//\_/-}
         fi
         echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-        
-        GIT_BRANCH_FORMATTED=${GIT_BRANCH//-/_}
-        API_URL_STR="API_BRANCH_$GIT_BRANCH_FORMATTED"
-        echo "API_URL_STR=${API_URL_STR^^}" >> $GITHUB_ENV
-    - name: Set environment variables
-      run: |
-        if [ ! -z "${{ secrets[env.API_URL_STR] }}" ]; then
-          echo "API_URL=${{ secrets.API_NAME }}-main.${{ secrets.BINN_STAGING_DNS }}" >> $GITHUB_ENV
-        else
-          echo "API_URL=${{ secrets.API_NAME }}-${{ secrets[env.API_URL_STR] }}.${{ secrets.BINN_STAGING_DNS }}" >> $GITHUB_ENV
-        fi
 
     - name: Create kubeconfig.yml
       run: |
