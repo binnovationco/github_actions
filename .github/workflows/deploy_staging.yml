@@ -106,7 +106,7 @@ jobs:
       - name: Print the final result
         shell: bash
         run: |
-          value=`cat api_url.txt`
+          value=`cat api_url/api_url.txt`
           echo The result is $value
 
       - name: Set environment variables
