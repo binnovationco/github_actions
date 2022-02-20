@@ -167,10 +167,10 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
     - name: Download api url file
-        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
-        uses: actions/download-artifact@v1
-        with:
-          name: api_url
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      uses: actions/download-artifact@v1
+      with:
+        name: api_url
 
     - name: Creating api url file
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
