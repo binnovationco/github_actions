@@ -99,11 +99,12 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Download math result for job 2
+      - name: Download api url file
+        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
         uses: actions/download-artifact@v1
         with:
           name: api_url
-      - name: Print the final result
+      - name: Creating api url file
         shell: bash
         run: |
           value=`cat api_url/api_url.txt`
