@@ -33,10 +33,10 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo ${{ github.ref }}
+          echo $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
           then
-              GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+              GIT_BRANCH=pr-$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           else
               GIT_BRANCH=${{ github.event.ref }}
               GIT_BRANCH=${GIT_BRANCH//\./-}
