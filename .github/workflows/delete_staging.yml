@@ -28,6 +28,9 @@ jobs:
     name: Remove k8s namespace
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
       - name: Set environment variables
         run: |
           if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
@@ -40,9 +43,6 @@ jobs:
               GIT_BRANCH=${GIT_BRANCH//\_/-}
           fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-
-      - name: Check out the repo
-        uses: actions/checkout@v2
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
