@@ -34,7 +34,7 @@ jobs:
           then
               GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           else
-              GIT_BRANCH=${GITHUB_REF#refs/heads/}
+              GIT_BRANCH=${{ github.event.ref }}
               GIT_BRANCH=${GIT_BRANCH//\./-}
               GIT_BRANCH=${GIT_BRANCH//\//-}
               GIT_BRANCH=${GIT_BRANCH//\_/-}
