@@ -33,6 +33,7 @@ jobs:
 
       - name: Set environment variables
         run: |
+          echo ${{ github.ref }}
           if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
           then
               GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
