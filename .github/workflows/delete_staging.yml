@@ -45,6 +45,17 @@ jobs:
           fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
 
+      - name: Clean up packages
+        uses: snok/container-retention-policy@v1
+        with:
+          image-names: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          cut-off: 1 week ago UTC
+          timestamp-to-use: updated_at
+          account-type: org
+          org-name: binnovationco
+          keep-at-least: 3
+          token: ${{ secrets.GH_PACKAGES_PAT }}
+
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
@@ -72,13 +83,4 @@ jobs:
       #     min-versions-to-keep: 0
       #     token: ${{ secrets.GH_SECRET }}
 
-      - name: Clean up packages
-        uses: snok/container-retention-policy@v1
-        with:
-          image-names: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
-          cut-off: 1 week ago UTC
-          timestamp-to-use: updated_at
-          account-type: org
-          org-name: binnovationco
-          keep-at-least: 3
-          token: ${{ secrets.GH_PACKAGES_PAT }}
+      
