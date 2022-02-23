@@ -50,11 +50,11 @@ jobs:
         continue-on-error: true
         with:
           image-names: ${{ github.event.repository.name }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
-          cut-off: 1 week ago UTC
+          cut-off: 0 hours ago UTC
           timestamp-to-use: updated_at
           account-type: org
           org-name: binnovationco
-          keep-at-least: 3
+          keep-at-least: 0
           token: ${{ secrets.GH_PACKAGES_PAT }}
 
       - name: Install doctl
