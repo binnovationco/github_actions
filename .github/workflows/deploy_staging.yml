@@ -87,6 +87,8 @@ on:
         required: false
       MAIL_PROVIDER:
         required: false
+      GH_PACKAGES_PAT:
+        required: true
 jobs:
   push_to_registry:
     env:
