@@ -49,7 +49,7 @@ jobs:
         uses: snok/container-retention-policy@v1
         continue-on-error: true
         with:
-          image-names: evolve_server/evolve-server_wip-home:acc7ebefe345905ac7d68a1938a8dc2a1d019bc5
+          image-names: ${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
           cut-off: 1 week ago UTC
           timestamp-to-use: updated_at
           account-type: org
@@ -75,6 +75,7 @@ jobs:
         run: kubectl delete namespace ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
 
       - name: Remove database schema
+        continue-on-error: true
         run: |
           mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'drop schema "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}";'
 
