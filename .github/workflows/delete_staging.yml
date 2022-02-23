@@ -49,7 +49,7 @@ jobs:
         uses: snok/container-retention-policy@v1
         continue-on-error: true
         with:
-          image-names: ${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          image-names: ${{ github.repository.name }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
           cut-off: 1 week ago UTC
           timestamp-to-use: updated_at
           account-type: org
