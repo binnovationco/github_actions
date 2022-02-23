@@ -18,7 +18,7 @@ on:
         required: true
       DATABASE_PASSWORD:
         required: true
-      GH_SECRET:
+      GH_PACKAGES_PAT:
         required: true
 jobs:
   delete_k8s_namespace:
@@ -71,3 +71,14 @@ jobs:
       #     package-name: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
       #     min-versions-to-keep: 0
       #     token: ${{ secrets.GH_SECRET }}
+
+      - name: Clean up packages
+        uses: snok/container-retention-policy@v1
+        with:
+          image-names: ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          cut-off: 1 week ago UTC
+          timestamp-to-use: updated_at
+          account-type: org
+          org-name: binnovationco
+          keep-at-least: 3
+          token: ${{ secrets.GH_PACKAGES_PAT }}
