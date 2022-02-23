@@ -47,8 +47,9 @@ jobs:
 
       - name: Clean up packages
         uses: snok/container-retention-policy@v1
+        continue-on-error: true
         with:
-          image-names: ${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          image-names: evolve_server/evolve-server_wip-home:acc7ebefe345905ac7d68a1938a8dc2a1d019bc5
           cut-off: 1 week ago UTC
           timestamp-to-use: updated_at
           account-type: org
@@ -70,6 +71,7 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
 
       - name: Remove k8s namespace
+        continue-on-error: true
         run: kubectl delete namespace ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
 
       - name: Remove database schema
