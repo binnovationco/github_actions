@@ -31,15 +31,27 @@ on:
 
 jobs:
   build:
-
+    env:
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 14.x
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
+    - name: Set environment variables
+      run: |
+        if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+        then
+            GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+        else
+            GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+            GIT_BRANCH=${GIT_BRANCH//\./-}
+            GIT_BRANCH=${GIT_BRANCH//\//-}
+            GIT_BRANCH=${GIT_BRANCH//\_/-}
+        fi
+        echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
     - run: yarn
     - run: yarn test:cov
     - run: yarn lint
