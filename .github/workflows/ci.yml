@@ -80,6 +80,7 @@ jobs:
         yarn test:e2e
 
     - name: Run e2e tests
+      if: inputs.need_database == false
       run: |
         NODE_ENV=test
         yarn test:e2e
