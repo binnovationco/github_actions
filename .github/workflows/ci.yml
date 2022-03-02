@@ -16,6 +16,8 @@ on:
         type: string
         default: 'digitalocean'
     secrets:
+      APP_NAME:
+        required: false
       DATABASE_APP_PASSWORD:
         required: false
       DATABASE_EXTERNAL_HOST:
