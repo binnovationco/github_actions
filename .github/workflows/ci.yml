@@ -68,15 +68,15 @@ jobs:
     - name: Run e2e tests against created database
       if: inputs.need_database == true
       run: |
-        PORT=3008\
-        DATABASE_TYPE=mysql\
-        DATABASE_HOST=${{ secrets.DATABASE_EXTERNAL_HOST }}\
-        DATABASE_PORT=${{ secrets.DATABASE_PORT }}\
-        DATABASE_USERNAME=${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e\
-        DATABASE_PASSWORD=${{ secrets.DATABASE_APP_PASSWORD }}\
-        DATABASE_NAME=${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e\
-        CRYPTO_SECRET=d1902jd012h910d\
-        NODE_ENV=test\
+        PORT=3008 \
+        DATABASE_TYPE=mysql \
+        DATABASE_HOST=${{ secrets.DATABASE_EXTERNAL_HOST }} \
+        DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
+        DATABASE_USERNAME=${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e \
+        DATABASE_PASSWORD=${{ secrets.DATABASE_APP_PASSWORD }} \
+        DATABASE_NAME=${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e \
+        CRYPTO_SECRET=d1902jd012h910d \
+        NODE_ENV=test \
         yarn test:e2e
 
     - name: Run e2e tests
