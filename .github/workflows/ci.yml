@@ -1,6 +1,33 @@
 name: CI Pipeline
 
-on: ['workflow_call']
+on: 
+  workflow_call:
+    inputs:
+      framework:
+        required: false
+        type: string
+        default: nestjs
+      need_database:
+        required: false
+        type: boolean
+        default: false
+      cloud:
+        required: false
+        type: string
+        default: 'digitalocean'
+    secrets:
+      DATABASE_APP_PASSWORD:
+        required: false
+      DATABASE_EXTERNAL_HOST:
+        required: false
+      DATABASE_HOST:
+        required: false
+      DATABASE_PASSWORD:
+        required: false
+      DATABASE_PORT:
+        required: false
+      DATABASE_USERNAME:
+        required: false
 
 jobs:
   build:
@@ -15,5 +42,31 @@ jobs:
         node-version: 14.x
     - run: yarn
     - run: yarn test:cov
-    - run: yarn test:e2e
     - run: yarn lint
+
+    - name: Configure mysql database and user
+      if: inputs.need_database == true
+      run: |
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e";'
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e'@'%' IDENTIFIED BY '${{ secrets.DATABASE_APP_PASSWORD }}';"
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e -e "GRANT ALL PRIVILEGES ON \"${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e\".* TO '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e'@'%';"
+
+    - name: Run e2e tests against created database
+      if: inputs.need_database == true
+      run: |
+        PORT=3008 \
+        DATABASE_TYPE=mysql \
+        DATABASE_HOST=${{ secrets.DATABASE_EXTERNAL_HOST }} \
+        DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
+        DATABASE_USERNAME=${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e \
+        DATABASE_PASSWORD=${{ secrets.DATABASE_APP_PASSWORD }} \
+        DATABASE_NAME=${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}_e2e \
+        CRYPTO_SECRET=d1902jd012h910d \
+        NODE_ENV=test \
+        yarn test:e2e
+
+    - name: Run e2e tests
+      run: |
+        NODE_ENV=test
+        yarn test:e2e
+    
