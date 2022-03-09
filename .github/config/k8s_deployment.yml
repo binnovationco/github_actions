@@ -93,6 +93,8 @@ spec:
           value: "<MAIL_FROM>"
         - name: MAIL_PROVIDER
           value: "<MAIL_PROVIDER>"
+        - name: GOOGLE_TAG_MANAGER_ID
+          value: "<GOOGLE_TAG_MANAGER_ID>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com

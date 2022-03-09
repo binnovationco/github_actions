@@ -89,6 +89,8 @@ on:
         required: false
       GH_PACKAGES_PAT:
         required: true
+      GOOGLE_TAG_MANAGER_ID:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -110,7 +112,8 @@ jobs:
         shell: bash
         run: |
           API_URL=`cat api_url/api_url.txt`
-          echo "NEXT_PUBLIC_API_URL=https://${API_URL}" >> .env.local
+          echo "NEXT_PUBLIC_API_URL=https://${API_URL}
+          NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID={{ secrets.GOOGLE_TAG_MANAGER_ID }}" >> .env.local
 
       - name: Set environment variables
         run: |
@@ -271,6 +274,7 @@ jobs:
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<API_URL>|${{ env.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_TAG_MANAGER_ID>|${{ secrets.GOOGLE_TAG_MANAGER_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
