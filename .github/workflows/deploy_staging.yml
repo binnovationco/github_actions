@@ -112,8 +112,9 @@ jobs:
         shell: bash
         run: |
           API_URL=`cat api_url/api_url.txt`
+          GTAG_MANAGER_ID={{ secrets.GOOGLE_TAG_MANAGER_ID }}
           echo "NEXT_PUBLIC_API_URL=https://${API_URL}
-          NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID={{ secrets.GOOGLE_TAG_MANAGER_ID }}" >> .env.local
+          NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${GTAG_MANAGER_ID}" >> .env.local
 
       - name: Set environment variables
         run: |
