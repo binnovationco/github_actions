@@ -83,5 +83,6 @@ jobs:
       if: inputs.need_database == false
       run: |
         NODE_ENV=test
+        PLAYWRIGHT_BROWSERS_PATH=/home/runner/.cache/ms-playwright yarn add @playwright/test@^1.20.0 playwright-chromium@^1.20.0 playwright-webkit@^1.20.0 -D
         yarn test:e2e
     
