@@ -95,6 +95,12 @@ spec:
           value: "<MAIL_PROVIDER>"
         - name: GOOGLE_TAG_MANAGER_ID
           value: "<GOOGLE_TAG_MANAGER_ID>"
+        - name: COGNITO_USER_POOL_ID
+          value: "<COGNITO_USER_POOL_ID>"
+        - name: COGNITO_CLIENT_ID
+          value: "<COGNITO_CLIENT_ID>"
+        - name: COGNITO_REGION
+          value: "<COGNITO_REGION>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
