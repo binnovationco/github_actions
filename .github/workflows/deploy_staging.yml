@@ -97,6 +97,8 @@ on:
         required: false
       COGNITO_REGION:
         required: false
+      IBGE_CITIES_URL:
+        required: false
 jobs:
   push_to_registry:
     env:
