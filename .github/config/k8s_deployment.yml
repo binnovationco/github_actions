@@ -101,6 +101,8 @@ spec:
           value: "<COGNITO_CLIENT_ID>"
         - name: COGNITO_REGION
           value: "<COGNITO_REGION>"
+        - name: IBGE_CITIES_URL
+          value: "<IBGE_CITIES_URL>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
