@@ -328,32 +328,38 @@ jobs:
     - name: Deploy k8s tls issuer
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
+      with: 
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
 
     - name: Deploy k8s namespace
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
+      with: 
+        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
 
     - name: Deploy k8s secret
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+      with: 
+        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
 
     - name: Deploy k8s service
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+      with: 
+        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Deploy k8s ingress
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
-      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+      with: 
+        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
     - name: Verify deployment
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
-      run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
+      with: 
+        args: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
   inform_pr_ingress_endpoint:
     if: github.event_name == 'pull_request'
     needs: k8s_deploy
