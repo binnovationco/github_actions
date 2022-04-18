@@ -376,7 +376,6 @@ jobs:
           
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
-        
         with:
           message: '🎉 Ambiente k8s atualizado (${{ github.sha }}): https://${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}.${{ secrets.BINN_STAGING_DNS }}'
           GITHUB_TOKEN: ${{ secrets.GH_PR_TOKEN }}

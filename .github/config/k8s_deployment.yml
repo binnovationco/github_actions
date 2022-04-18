@@ -106,6 +106,9 @@ spec:
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
+
+      nodeselector:
+      - env: staging
 ---
 apiVersion: v1
 kind: Service
