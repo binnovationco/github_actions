@@ -335,31 +335,31 @@ jobs:
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
       with: 
-        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
 
     - name: Deploy k8s secret
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
       with: 
-        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
 
     - name: Deploy k8s service
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
       with: 
-        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Deploy k8s ingress
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
       with: 
-        args: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
     - name: Verify deployment
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master  
       with: 
-        args: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
+        args: rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
   inform_pr_ingress_endpoint:
     if: github.event_name == 'pull_request'
     needs: k8s_deploy
