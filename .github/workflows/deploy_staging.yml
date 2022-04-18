@@ -99,6 +99,8 @@ on:
         required: false
       IBGE_CITIES_URL:
         required: false
+      KUBE_CONFIG_DATA:
+        required: false
 jobs:
   push_to_registry:
     env:
