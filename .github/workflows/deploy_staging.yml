@@ -17,7 +17,7 @@ on:
       cloud:
         required: false
         type: string
-        default: 'digitalocean'
+        default: 'aws'
     secrets:
       BINN_STAGING_DNS:
         required: true
