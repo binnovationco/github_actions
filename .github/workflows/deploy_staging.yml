@@ -251,6 +251,7 @@ jobs:
         sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_URL>|mysql://${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ secrets.DATABASE_APP_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
