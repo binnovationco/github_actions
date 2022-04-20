@@ -1,6 +1,11 @@
 name: k8s Destroy
 on:
   workflow_call:
+    inputs:
+      cloud:
+        required: false
+        type: string
+        default: 'aws'
     secrets:
       APP_NAME:
         required: true
@@ -20,6 +25,8 @@ on:
         required: false
       GH_PACKAGES_PAT:
         required: true
+      KUBE_CONFIG_DATA:
+        required: false
 jobs:
   delete_k8s_namespace:
     if: ${{ github.event.ref_type == 'branch' || (github.event_name == 'pull_request' && github.event.action == 'closed') }}
@@ -58,6 +65,7 @@ jobs:
           token: ${{ secrets.GH_PACKAGES_PAT }}
 
       - name: Install doctl
+        if: inputs.cloud == 'digitalocean'
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
@@ -68,13 +76,26 @@ jobs:
         shell: bash
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
+        if: inputs.cloud == 'digitalocean'
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
 
       - name: Remove k8s namespace
+        if: inputs.cloud != 'aws'
         continue-on-error: true
         run: kubectl delete namespace ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
 
+      #AWS
+      - name: Remove k8s namespace
+        if: inputs.cloud == 'aws'
+        continue-on-error: true
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with: 
+          args: delete namespace ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
+
       - name: Remove database schema
+        if: inputs.cloud != 'aws'
         continue-on-error: true
         run: |
           mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'drop schema "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}";'
