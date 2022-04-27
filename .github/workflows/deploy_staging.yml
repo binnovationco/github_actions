@@ -239,8 +239,8 @@ jobs:
     - name: Configure mysql database and user
       if: inputs.framework == 'nestjs' && inputs.need_database == true
       run: |
-        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
-        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%` IDENTIFIED BY `${{ secrets.DATABASE_APP_PASSWORD }}`;"
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS \'${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}\';'
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@'%' IDENTIFIED BY `${{ secrets.DATABASE_APP_PASSWORD }}`;"
         mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%`;"
 
     - name: Update deployment file for NestJS
