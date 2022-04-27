@@ -98,4 +98,4 @@ jobs:
         if: inputs.cloud != 'aws'
         continue-on-error: true
         run: |
-          mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'drop schema "${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}";'
+          mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'drop schema `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
