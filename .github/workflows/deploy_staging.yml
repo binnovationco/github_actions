@@ -103,6 +103,12 @@ on:
         required: false
       DATABASE_URL:
         required: false
+      AWS_FILE_UPLOAD_ACCESS_KEY_ID:
+        required: false
+      AWS_FILE_UPLOAD_SECRET_KEY:
+        required: false
+      AWS_S3_BUCKET:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -278,6 +284,9 @@ jobs:
         sed -i 's|<COGNITO_REGION>|${{ secrets.COGNITO_REGION }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<DATABASE_URL>|${{ secrets.DATABASE_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<IBGE_CITIES_URL>|${{ secrets.IBGE_CITIES_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_FILE_UPLOAD_ACCESS_KEY_ID>|${{ secrets.AWS_FILE_UPLOAD_ACCESS_KEY_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_FILE_UPLOAD_SECRET_KEY>|${{ secrets.AWS_FILE_UPLOAD_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_S3_BUCKET>|${{ secrets.AWS_S3_BUCKET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
