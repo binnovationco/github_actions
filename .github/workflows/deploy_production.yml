@@ -145,7 +145,7 @@ jobs:
               GIT_BRANCH=${GIT_BRANCH//\_/-}
           fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
-          TAG=`echo ${{ env.GITHUB_REF_NAME }} | awk 'BEGIN { FS = "tags-" } ; { print $2 }'` 
+          echo TAG=`echo ${{ env.GITHUB_REF_NAME }} | awk 'BEGIN { FS = "tags-" } ; { print $2 }'`` >> $GITHUB_ENV
 
       - name: Clean up packages
         uses: snok/container-retention-policy@v1
