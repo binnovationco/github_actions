@@ -1,0 +1,409 @@
+name: k8s Pipeline
+on:
+  workflow_call:
+    inputs:
+      framework:
+        required: false
+        type: string
+        default: nestjs
+      language:
+        required: false
+        type: string
+        default: javascript
+      need_database:
+        required: false
+        type: boolean
+        default: false
+      cloud:
+        required: false
+        type: string
+        default: 'aws'
+    secrets:
+      BINN_PRODUCTION_DNS:
+        required: true
+      CLUSTER_NAME:
+        required: true
+      CRYPTO_SECRET:
+        required: false
+      DATABASE_APP_PASSWORD:
+        required: false
+      DATABASE_EXTERNAL_HOST:
+        required: false
+      DATABASE_HOST:
+        required: false
+      DATABASE_PASSWORD:
+        required: false
+      DATABASE_PORT:
+        required: false
+      DATABASE_USERNAME:
+        required: false
+      DIGITALOCEAN_ACCESS_TOKEN:
+        required: false
+      GH_PR_TOKEN:
+        required: true
+      GH_SECRET:
+        required: true
+      KUBECONFIG_YML:
+        required: true
+      APP_NAME:
+        required: true
+      FACEBOOK_APP_ID:
+        required: false
+      FACEBOOK_APP_SECRET:
+        required: false
+      FACEBOOK_REDIRECT_URL:
+        required: false
+      FACEBOOK_PROFILE_FIELDS:
+        required: false
+      GOOGLE_CLIENT_ID:
+        required: false
+      GOOGLE_CLIENT_SECRET:
+        required: false
+      GOOGLE_REDIRECT_URL:
+        required: false
+      GOOGLE_SCOPES:
+        required: false
+      AZURE_CREDENTIALS:
+        required: false
+      CLUSTER_RESOURCE_GROUP:
+        required: false
+      JWT_SECRET_KEY:
+        required: false
+      JWT_TOKEN_EXPIRATION_TIME:
+        required: false
+      CORREIO_SOAP_WSDL:
+        required: false
+      ACTIVE_CAMPAIGN_URL:
+        required: false
+      ACTIVE_CAMPAIGN_TOKEN:
+        required: false
+      RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES:
+        required: false
+      TOKEN_ACTIVATION_TRIES_LIMIT:
+        required: false
+      SEND_GRID_API_KEY:
+        required: false
+      MAIL_FROM:
+        required: false
+      MAIL_PROVIDER:
+        required: false
+      GH_PACKAGES_PAT:
+        required: true
+      GOOGLE_TAG_MANAGER_ID:
+        required: false
+      COGNITO_USER_POOL_ID:
+        required: false
+      COGNITO_CLIENT_ID:
+        required: false
+      COGNITO_REGION:
+        required: false
+      IBGE_CITIES_URL:
+        required: false
+      KUBE_CONFIG_DATA:
+        required: false
+      DATABASE_URL:
+        required: false
+      AWS_FILE_UPLOAD_ACCESS_KEY_ID:
+        required: false
+      AWS_FILE_UPLOAD_SECRET_KEY:
+        required: false
+      AWS_S3_BUCKET:
+        required: false
+jobs:
+  push_to_registry:
+    env:
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Download api url file
+        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+        uses: actions/download-artifact@v1
+        with:
+          name: api_url
+
+      - name: Creating api url file
+        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+        shell: bash
+        run: |
+          API_URL=`cat api_url/api_url.txt`
+          echo "NEXT_PUBLIC_API_URL=https://${API_URL}
+          NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${{ secrets.GOOGLE_TAG_MANAGER_ID }}" >> .env.local
+
+      - name: Set environment variables
+        run: |
+          if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+          then
+              GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          else
+              GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+              GIT_BRANCH=${GIT_BRANCH//\./-}
+              GIT_BRANCH=${GIT_BRANCH//\//-}
+              GIT_BRANCH=${GIT_BRANCH//\_/-}
+          fi
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+
+      - name: Clean up packages
+        uses: snok/container-retention-policy@v1
+        continue-on-error: true
+        with:
+          image-names: ${{ github.event.repository.name }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
+          cut-off: 1 week ago UTC
+          timestamp-to-use: updated_at
+          account-type: org
+          org-name: binnovationco
+          keep-at-least: 5
+          token: ${{ secrets.GH_PACKAGES_PAT }}
+
+      - name: Log in to GitHub Docker Registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ env.GITHUB_REF_NAME }}
+  k8s_deploy:
+    needs: push_to_registry
+    name: Provisioning environment and database
+    env:
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+
+    - name: Check out github actions repo
+      uses: actions/checkout@master
+      with:
+        repository: binnovationco/github_actions
+        path: 'ghactions'
+
+    - name: Install doctl
+      if: inputs.cloud == 'digitalocean'
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Download api url file
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      uses: actions/download-artifact@v1
+      with:
+        name: api_url
+
+    - name: Creating api url file
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      shell: bash
+      run: |
+        API_URL=`cat api_url/api_url.txt`
+        echo "API_URL=$API_URL" >> $GITHUB_ENV
+
+    - name: Set environment variables
+      run: |
+        if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+        then
+            GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+        else
+            GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+            GIT_BRANCH=${GIT_BRANCH//\./-}
+            GIT_BRANCH=${GIT_BRANCH//\//-}
+            GIT_BRANCH=${GIT_BRANCH//\_/-}
+        fi
+        echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+
+    - name: Create kubeconfig.yml
+      run: |
+          echo ${{ secrets.KUBECONFIG_YML }} | base64 -d >> kubeconfig.yml
+      shell: bash
+        
+    - name: Update deployment file with image info
+      run: TAG=${{ env.GITHUB_REF_NAME }} && sed -i 's|<IMAGE>|ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:'${TAG}'|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+
+    - name: Update deployment file with github secret info
+      run: |
+        sed -i 's|<GITHUB_SECRET>|${{ secrets.GH_SECRET }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-production|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+
+    - name: Update namespace file
+      run: |
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-production|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
+
+    - name: Update ingress file
+      run: |
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-production|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+        sed -i 's|<BINN_STAGING_DNS>|${{ secrets.BINN_PRODUCTION_DNS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+
+    # - name: Configure mysql database and user
+    #   if: inputs.framework == 'nestjs' && inputs.need_database == true
+    #   run: |
+    #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
+    #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%' IDENTIFIED BY '${{ secrets.DATABASE_APP_PASSWORD }}';"
+    #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%';"
+
+    - name: Update deployment file for NestJS
+      if: inputs.framework == 'nestjs'
+      run: |
+        sed -i 's|<DATABASE_HOST>|${{ secrets.DATABASE_HOST }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_PORT>|${{ secrets.DATABASE_PORT }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_USERNAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_PASSWORD>|${{ secrets.DATABASE_APP_PASSWORD }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_NAME>|${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_URL>|mysql://${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ secrets.DATABASE_APP_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-production|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CRYPTO_SECRET>|${{ secrets.CRYPTO_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_APP_ID>|${{ secrets.FACEBOOK_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_APP_SECRET>|${{ secrets.FACEBOOK_APP_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_REDIRECT_URL>|${{ env.IMAGE_NAME }}-production.${{ secrets.FACEBOOK_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<FACEBOOK_PROFILE_FIELDS>|${{ secrets.FACEBOOK_PROFILE_FIELDS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_CLIENT_ID>|${{ secrets.GOOGLE_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_CLIENT_SECRET>|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_REDIRECT_URL>|${{ env.IMAGE_NAME }}-production.${{ secrets.GOOGLE_REDIRECT_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_SCOPES>|${{ secrets.GOOGLE_SCOPES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<JWT_TOKEN_EXPIRATION_TIME>|${{ secrets.JWT_TOKEN_EXPIRATION_TIME }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<JWT_SECRET_KEY>|${{ secrets.JWT_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CORREIO_SOAP_WSDL>|${{ secrets.CORREIO_SOAP_WSDL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<ACTIVE_CAMPAIGN_URL>|${{ secrets.ACTIVE_CAMPAIGN_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<ACTIVE_CAMPAIGN_TOKEN>|${{ secrets.ACTIVE_CAMPAIGN_TOKEN }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES>|${{ secrets.RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<TOKEN_ACTIVATION_TRIES_LIMIT>|${{ secrets.TOKEN_ACTIVATION_TRIES_LIMIT }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<SEND_GRID_API_KEY>|${{ secrets.SEND_GRID_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<MAIL_FROM>|${{ secrets.MAIL_FROM }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<MAIL_PROVIDER>|${{ secrets.MAIL_PROVIDER }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<COGNITO_USER_POOL_ID>|${{ secrets.COGNITO_USER_POOL_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<COGNITO_CLIENT_ID>|${{ secrets.COGNITO_CLIENT_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<COGNITO_REGION>|${{ secrets.COGNITO_REGION }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DATABASE_URL>|${{ secrets.DATABASE_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<IBGE_CITIES_URL>|${{ secrets.IBGE_CITIES_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_FILE_UPLOAD_ACCESS_KEY_ID>|${{ secrets.AWS_FILE_UPLOAD_ACCESS_KEY_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_FILE_UPLOAD_SECRET_KEY>|${{ secrets.AWS_FILE_UPLOAD_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_S3_BUCKET>|${{ secrets.AWS_S3_BUCKET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+
+    - name: Update deployment file for NextJS and Ionic
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      run: |
+        sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-production|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CD_SHA>|${{ github.sha }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<API_URL>|${{ env.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GOOGLE_TAG_MANAGER_ID>|${{ secrets.GOOGLE_TAG_MANAGER_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+
+    - name: Save DigitalOcean kubeconfig with short-lived credentials
+      if: inputs.cloud == 'digitalocean'
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
+
+    - name: Authenticate with Azure
+      if: inputs.cloud == 'azure'
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: ${{ secrets.CLUSTER_NAME }}
+        resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
+
+    - name: Deploy k8s tls issuer
+      if: inputs.cloud != 'aws'
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
+
+    - name: Deploy k8s namespace
+      if: inputs.cloud != 'aws'
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
+
+    - name: Deploy k8s secret
+      if: inputs.cloud != 'aws'
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+
+    - name: Deploy k8s service
+      if: inputs.cloud != 'aws'
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+
+    - name: Deploy k8s ingress
+      if: inputs.cloud != 'aws'
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+
+    - name: Verify deployment
+      if: inputs.cloud != 'aws'
+      run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-production deployment.apps/${{ env.IMAGE_NAME }}-production
+
+    # AWS
+    - name: Deploy k8s tls issuer
+      if: inputs.cloud == 'aws'
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with: 
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
+
+    - name: Deploy k8s namespace
+      if: inputs.cloud == 'aws'
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with: 
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_namespace.yml
+
+    - name: Deploy k8s secret
+      if: inputs.cloud == 'aws'
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with: 
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_secret.yml
+
+    - name: Deploy k8s service
+      if: inputs.cloud == 'aws'
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with: 
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+
+    - name: Deploy k8s ingress
+      if: inputs.cloud == 'aws'
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with: 
+        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
+
+    - name: Verify deployment
+      if: inputs.cloud == 'aws'
+      uses: kodermax/kubectl-aws-eks@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with: 
+        args: rollout status -n ${{ env.IMAGE_NAME }}-production deployment.apps/${{ env.IMAGE_NAME }}-production
+  inform_pr_ingress_endpoint:
+    if: github.event_name == 'pull_request'
+    needs: k8s_deploy
+    env:
+      IMAGE_NAME: ${{ secrets.APP_NAME }}
+    name: Comment on PR with ingress endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variables
+        run: |
+          if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
+          then
+              GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          else
+              GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+              GIT_BRANCH=${GIT_BRANCH//\./-}
+              GIT_BRANCH=${GIT_BRANCH//\//-}
+              GIT_BRANCH=${GIT_BRANCH//\_/-}
+          fi
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: '🎉 Ambiente k8s atualizado (${{ github.sha }}): https://${{ env.IMAGE_NAME }}-production.${{ secrets.BINN_PRODUCTION_DNS }}'
+          GITHUB_TOKEN: ${{ secrets.GH_PR_TOKEN }}
