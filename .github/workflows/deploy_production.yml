@@ -145,6 +145,7 @@ jobs:
               GIT_BRANCH=${GIT_BRANCH//\_/-}
           fi
           echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+          TAG=`echo ${{ env.GITHUB_REF_NAME }} | awk 'BEGIN { FS = "tags-" } ; { print $2 }'` 
 
       - name: Clean up packages
         uses: snok/container-retention-policy@v1
@@ -172,7 +173,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ env.GITHUB_REF_NAME }}
+            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ env.TAG }}
   k8s_deploy:
     needs: push_to_registry
     name: Provisioning environment and database
@@ -227,7 +228,7 @@ jobs:
       shell: bash
         
     - name: Update deployment file with image info
-      run: TAG=${{ env.GITHUB_REF_NAME }} && sed -i 's|<IMAGE>|ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:'${TAG}'|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+      run:  sed -i 's|<IMAGE>|ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ env.TAG }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file with github secret info
       run: |
