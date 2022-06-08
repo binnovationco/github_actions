@@ -19,7 +19,7 @@ on:
         type: string
         default: 'aws'
     secrets:
-      BINN_PRODUCTION_DNS:
+      BINN_STAGING_DNS:
         required: true
       CLUSTER_NAME:
         required: true
