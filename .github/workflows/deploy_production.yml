@@ -136,7 +136,7 @@ jobs:
       - name: Set environment variables
         run: |
           echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "GIT_BRANCH=${{ env.TAG }}" >> $GITHUB_ENV
+          echo "GIT_BRANCH=production" >> $GITHUB_ENV
 
       - name: Clean up packages
         uses: snok/container-retention-policy@v1
@@ -202,7 +202,7 @@ jobs:
     - name: Set environment variables
       run: |
         echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-        echo "GIT_BRANCH=${{ env.TAG }}" >> $GITHUB_ENV
+        echo "GIT_BRANCH=production" >> $GITHUB_ENV
 
     - name: Create kubeconfig.yml
       run: |
