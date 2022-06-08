@@ -201,16 +201,8 @@ jobs:
 
     - name: Set environment variables
       run: |
-        if [ ${GITHUB_EVENT_NAME} == 'pull_request' ];
-        then
-            GIT_BRANCH=pr-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-        else
-            GIT_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-            GIT_BRANCH=${GIT_BRANCH//\./-}
-            GIT_BRANCH=${GIT_BRANCH//\//-}
-            GIT_BRANCH=${GIT_BRANCH//\_/-}
-        fi
-        echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+        echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        echo "GIT_BRANCH=$TAG" >> $GITHUB_ENV
 
     - name: Create kubeconfig.yml
       run: |
