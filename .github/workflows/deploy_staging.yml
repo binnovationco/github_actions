@@ -113,6 +113,8 @@ on:
         required: false
       AWS_SECRET_ACCESS_KEY:
         required: false
+      COGNITO_REDIRECT_URI:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -135,7 +137,16 @@ jobs:
         run: |
           API_URL=`cat api_url/api_url.txt`
           echo "NEXT_PUBLIC_API_URL=https://${API_URL}
+          NEXT_PUBLIC_REDIRECT_URI_AMAZONCOGNITO=${{ secrets.COGNITO_REDIRECT_URI }}
           NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${{ secrets.GOOGLE_TAG_MANAGER_ID }}" >> .env.local
+
+      - name: Creating AWS credentials file
+        if: inputs.framework == 'nestjs'
+        shell: bash
+        run: |
+          [default]
+          aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env.local
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
