@@ -31,8 +31,6 @@ spec:
           limits:
             cpu: 100m
         env:
-        - name: AWS_SHARED_CREDENTIALS_FILE
-          value: /app/.aws/credentials
         - name: PORT
           value: "3000"
         - name: DATABASE_TYPE
