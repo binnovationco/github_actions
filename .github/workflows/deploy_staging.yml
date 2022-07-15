@@ -145,10 +145,10 @@ jobs:
         if: inputs.framework == 'nestjs'
         shell: bash
         run: |
-          mkdir ~/.aws
+          mkdir /home/node/.aws
           echo "[default]
           aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+          aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> /home/node/.aws/credentials
 
       - name: Set environment variables
         run: |
