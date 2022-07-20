@@ -237,6 +237,12 @@ jobs:
         fi
         echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
 
+    - name: Run migrations
+      if: inputs.orm == 'prisma' && inputs.need_database == true
+      run: |
+        npx prisma migrate deploy
+        npx prisma db seed
+
     - name: Create kubeconfig.yml
       run: |
           echo ${{ secrets.KUBECONFIG_YML }} | base64 -d >> kubeconfig.yml
@@ -259,12 +265,20 @@ jobs:
         sed -i 's|<APP_NAME>|${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
         sed -i 's|<BINN_STAGING_DNS>|${{ secrets.BINN_STAGING_DNS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
-    # - name: Configure mysql database and user
-    #   if: inputs.framework == 'nestjs' && inputs.need_database == true
-    #   run: |
-    #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
-    #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%' IDENTIFIED BY '${{ secrets.DATABASE_APP_PASSWORD }}';"
-    #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO '${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}'@'%';"
+    - name: Configure mysql database and user on DigitalOcean
+      if: inputs.framework == 'nestjs' && inputs.need_database == true && cloud == 'digitalocean'
+      run: |
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%` IDENTIFIED BY `${{ secrets.DATABASE_APP_PASSWORD }}`;"
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%`;"
+
+    - name: Configure mysql database and user on AWS
+      if: inputs.framework == 'nestjs' && inputs.need_database == true && cloud == 'aws'
+      run: |
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%` IDENTIFIED BY `${{ secrets.DATABASE_APP_PASSWORD }}`;"
+        mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%`;"
+
 
     - name: Update deployment file for NestJS
       if: inputs.framework == 'nestjs'
