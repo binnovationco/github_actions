@@ -266,7 +266,7 @@ jobs:
         sed -i 's|<BINN_STAGING_DNS>|${{ secrets.BINN_STAGING_DNS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_ingress.yml
 
     - name: Configure mysql database and user on DigitalOcean
-      if: inputs.framework == 'nestjs' && inputs.need_database == true && cloud == 'digitalocean'
+      if: inputs.framework == 'nestjs' && inputs.need_database == true && inputs.cloud == 'digitalocean'
       run: |
         mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`;'
         mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%` IDENTIFIED BY `${{ secrets.DATABASE_APP_PASSWORD }}`;"
