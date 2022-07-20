@@ -246,6 +246,8 @@ jobs:
       if: inputs.orm == 'prisma' && inputs.need_database == true
       run: |
         ls -lah
+        yarn install
+        yarn build
         npx prisma migrate deploy
         npx prisma db seed
       env: 
