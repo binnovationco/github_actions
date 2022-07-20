@@ -242,6 +242,8 @@ jobs:
       run: |
         npx prisma migrate deploy
         npx prisma db seed
+      env: 
+        DATABASE_URL: mysql://${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}:${{ secrets.DATABASE_APP_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT }}/${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}
 
     - name: Create kubeconfig.yml
       run: |
