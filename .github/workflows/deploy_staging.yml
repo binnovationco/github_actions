@@ -332,6 +332,7 @@ jobs:
         sed -i 's|<AWS_S3_BUCKET>|${{ secrets.AWS_S3_BUCKET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<CHECKOUT_JWT_SECRET>|${{ secrets.CHECKOUT_JWT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'

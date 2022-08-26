@@ -115,6 +115,8 @@ spec:
           value: "<REDIRECT_URI_AMAZONCOGNITO>"
         - name: GOOGLE_MAPS_API_KEY
           value: "<GOOGLE_MAPS_API_KEY>"
+        - name: CHECKOUT_JWT_SECRET
+          value: "<CHECKOUT_JWT_SECRET>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
