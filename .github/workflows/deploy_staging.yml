@@ -146,7 +146,8 @@ jobs:
           API_URL=`cat api_url/api_url.txt`
           echo "NEXT_PUBLIC_API_URL=https://${API_URL}
           NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${{ secrets.GOOGLE_TAG_MANAGER_ID }}
-          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env.local
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          NEXT_PUBLIC_REDIRECT_URI_AMAZONCOGNITO=${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}" >> .env.local
           
 
       - name: Creating AWS credentials file
@@ -346,6 +347,7 @@ jobs:
         sed -i 's|<API_URL>|${{ env.API_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_TAG_MANAGER_ID>|${{ secrets.GOOGLE_TAG_MANAGER_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
