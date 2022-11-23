@@ -307,7 +307,8 @@ jobs:
       if: inputs.framework == 'nestjs'
       shell: bash
       run: |
-        echo `cat redis_url/redis_url.txt` >> $GITHUB_ENV
+        REDIS_CLUSTER_URL=`cat redis_url/redis_url.txt`
+        echo "REDIS_CLUSTER_URL=$REDIS_CLUSTER_URL" >> $GITHUB_ENV
 
     - name: Update deployment file for NestJS
       if: inputs.framework == 'nestjs'
