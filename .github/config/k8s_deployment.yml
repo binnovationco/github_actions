@@ -81,6 +81,10 @@ spec:
           value: "<ACTIVE_CAMPAIGN_TOKEN>"
         - name: NEXT_PUBLIC_API_URL
           value: "https://<API_URL>"
+        - name: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+          value: "<GOOGLE_MAPS_API_KEY>"
+        - name: NEXT_PUBLIC_REDIRECT_URI_AMAZONCOGNITO
+          value: "<REDIRECT_URI_AMAZONCOGNITO>"
         - name: API_URL
           value: "https://<API_URL>"
         - name: RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES
