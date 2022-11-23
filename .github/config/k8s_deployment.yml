@@ -117,6 +117,8 @@ spec:
           value: "<GOOGLE_MAPS_API_KEY>"
         - name: CHECKOUT_JWT_SECRET
           value: "<CHECKOUT_JWT_SECRET>"
+        - name: REDIS_CLUSTER_URL
+          value: "<REDIS_CLUSTER_URL>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com

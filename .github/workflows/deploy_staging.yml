@@ -294,6 +294,19 @@ jobs:
     #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} -e "CREATE USER IF NOT EXISTS `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%` IDENTIFIED BY `${{ secrets.DATABASE_APP_PASSWORD }}`;"
     #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%`;"
 
+    - name: Download redis url file
+        if: inputs.framework == 'nestjs'
+        uses: actions/download-artifact@v1
+        with:
+          name: redis_url
+
+      - name: Creating redis url file
+        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+        shell: bash
+        run: |
+          REDIS_CLUSTER_URL=`cat redis_url/redis_url.txt`
+          echo $REDIS_CLUSTER_URL >> $GITHUB_ENV
+
     - name: Update deployment file for NestJS
       if: inputs.framework == 'nestjs'
       run: |
@@ -335,6 +348,7 @@ jobs:
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CHECKOUT_JWT_SECRET>|${{ secrets.CHECKOUT_JWT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<REDIS_CLUSTER_URL>|${{ env.REDIS_CLUSTER_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
