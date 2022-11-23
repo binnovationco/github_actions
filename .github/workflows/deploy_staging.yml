@@ -304,7 +304,7 @@ jobs:
         name: redis_url
 
     - name: Creating redis url file
-      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      if: inputs.framework == 'nestjs'
       shell: bash
       run: |
         REDIS_CLUSTER_URL=`cat redis_url/redis_url.txt`
