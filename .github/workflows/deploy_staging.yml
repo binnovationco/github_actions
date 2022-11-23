@@ -298,17 +298,17 @@ jobs:
     #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%`;"
 
     - name: Download redis url file
-        if: inputs.framework == 'nestjs'
-        uses: actions/download-artifact@v1
-        with:
-          name: redis_url
+      if: inputs.framework == 'nestjs'
+      uses: actions/download-artifact@v1
+      with:
+        name: redis_url
 
-      - name: Creating redis url file
-        if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
-        shell: bash
-        run: |
-          REDIS_CLUSTER_URL=`cat redis_url/redis_url.txt`
-          echo $REDIS_CLUSTER_URL >> $GITHUB_ENV
+    - name: Creating redis url file
+      if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
+      shell: bash
+      run: |
+        REDIS_CLUSTER_URL=`cat redis_url/redis_url.txt`
+        echo $REDIS_CLUSTER_URL >> $GITHUB_ENV
 
     - name: Update deployment file for NestJS
       if: inputs.framework == 'nestjs'
