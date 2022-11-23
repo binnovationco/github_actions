@@ -303,6 +303,12 @@ jobs:
       with:
         name: redis_url
 
+    - name: Creating redis url file
+      if: inputs.framework == 'nestjs'
+      shell: bash
+      run: |
+        echo `cat redis_url/redis_url.txt` >> $GITHUB_ENV
+
     - name: Update deployment file for NestJS
       if: inputs.framework == 'nestjs'
       run: |
@@ -344,7 +350,7 @@ jobs:
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CHECKOUT_JWT_SECRET>|${{ secrets.CHECKOUT_JWT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
-        sed -i 's|<REDIS_CLUSTER_URL>|`cat redis_url/redis_url.txt`|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<REDIS_CLUSTER_URL>|${{ env.REDIS_CLUSTER_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
