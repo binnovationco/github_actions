@@ -298,12 +298,14 @@ jobs:
     #     mysql -h ${{ secrets.DATABASE_EXTERNAL_HOST }} -P ${{ secrets.DATABASE_PORT }} -u ${{ secrets.DATABASE_USERNAME }} --password=${{ secrets.DATABASE_PASSWORD }} --database ${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }} -e "GRANT ALL PRIVILEGES ON `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`.* TO `${{ env.IMAGE_NAME }}_${{ env.GIT_BRANCH }}`@`%`;"
 
     - name: Download redis url file
+      continue-on-error: true
       if: inputs.framework == 'nestjs'
       uses: actions/download-artifact@v1
       with:
         name: redis_url
 
     - name: Creating redis url file
+      continue-on-error: true
       if: inputs.framework == 'nestjs'
       shell: bash
       run: |
