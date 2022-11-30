@@ -123,6 +123,10 @@ spec:
           value: "<CHECKOUT_JWT_SECRET>"
         - name: REDIS_CLUSTER_URL
           value: "<REDIS_CLUSTER_URL>"
+        - name: PAGARME_API_KEY
+          value: "<PAGARME_API_KEY>"
+        - name: PAGARME_SECRET_KEY
+          value: "<PAGARME_SECRET_KEY>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com

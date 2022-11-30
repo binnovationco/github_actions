@@ -123,6 +123,10 @@ on:
         required: false
       CHECKOUT_JWT_SECRET:
         required: false
+      PAGARME_API_KEY:
+        required: false
+      PAGARME_SECRET_KEY:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -354,6 +358,8 @@ jobs:
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CHECKOUT_JWT_SECRET>|${{ secrets.CHECKOUT_JWT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIS_CLUSTER_URL>|${{ env.REDIS_CLUSTER_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_API_KEY>|${{ env.PAGARME_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_SECRET_KEY>|${{ env.PAGARME_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
