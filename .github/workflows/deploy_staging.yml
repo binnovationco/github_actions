@@ -127,6 +127,24 @@ on:
         required: false
       PAGARME_SECRET_KEY:
         required: false
+      PAGARME_BASE_URL:
+        required: false
+      PAGARME_WEBHOOK_USERNAME:
+        required: false
+      PAGARME_WEBHOOK_PASSWORD:
+        required: false
+      PAGARME_BOLETO_BANK:
+        required: false
+      PAGARME_BOLETO_INSTRUCTIONS:
+        required: false
+      PAGARME_BOLETO_DUE_AT:
+        required: false
+      PAGARME_BOLETO_OUR_NUMBER:
+        required: false
+      PAGARME_BOLETO_TYPE:
+        required: false
+      PAGARME_BOLETO_DOCUMENT_NUMBER:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -360,6 +378,15 @@ jobs:
         sed -i 's|<REDIS_CLUSTER_URL>|${{ env.REDIS_CLUSTER_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<PAGARME_API_KEY>|${{ env.PAGARME_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<PAGARME_SECRET_KEY>|${{ env.PAGARME_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BASE_URL>|${{ env.PAGARME_BASE_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_WEBHOOK_USERNAME>|${{ env.PAGARME_WEBHOOK_USERNAME }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_WEBHOOK_PASSWORD>|${{ env.PAGARME_WEBHOOK_PASSWORD }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BOLETO_BANK>|${{ env.PAGARME_BOLETO_BANK }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BOLETO_INSTRUCTIONS>|${{ env.PAGARME_BOLETO_INSTRUCTIONS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BOLETO_DUE_AT>|${{ env.PAGARME_BOLETO_DUE_AT }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BOLETO_OUR_NUMBER>|${{ env.PAGARME_BOLETO_OUR_NUMBER }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BOLETO_TYPE>|${{ env.PAGARME_BOLETO_TYPE }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGARME_BOLETO_DOCUMENT_NUMBER>|${{ env.PAGARME_BOLETO_DOCUMENT_NUMBER }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'

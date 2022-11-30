@@ -127,6 +127,24 @@ spec:
           value: "<PAGARME_API_KEY>"
         - name: PAGARME_SECRET_KEY
           value: "<PAGARME_SECRET_KEY>"
+        - name: PAGARME_BASE_URL
+          value: "<PAGARME_BASE_URL>"
+        - name: PAGARME_WEBHOOK_USERNAME
+          value: "<PAGARME_WEBHOOK_USERNAME>"
+        - name: PAGARME_WEBHOOK_PASSWORD
+          value: "<PAGARME_WEBHOOK_PASSWORD>"
+        - name: PAGARME_BOLETO_BANK
+          value: "<PAGARME_BOLETO_BANK>"
+        - name: PAGARME_BOLETO_INSTRUCTIONS
+          value: "<PAGARME_BOLETO_INSTRUCTIONS>"
+        - name: PAGARME_BOLETO_DUE_AT
+          value: "<PAGARME_BOLETO_DUE_AT>"
+        - name: PAGARME_BOLETO_OUR_NUMBER
+          value: "<PAGARME_BOLETO_OUR_NUMBER>"
+        - name: PAGARME_BOLETO_TYPE
+          value: "<PAGARME_BOLETO_TYPE>"
+        - name: PAGARME_BOLETO_DOCUMENT_NUMBER
+          value: "<PAGARME_BOLETO_DOCUMENT_NUMBER>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
