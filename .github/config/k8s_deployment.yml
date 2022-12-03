@@ -145,6 +145,8 @@ spec:
           value: "<PAGARME_BOLETO_TYPE>"
         - name: PAGARME_BOLETO_DOCUMENT_NUMBER
           value: "<PAGARME_BOLETO_DOCUMENT_NUMBER>"
+        - name: APP_NAME
+          value: "<APP_ORIGINAL_NAME>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
