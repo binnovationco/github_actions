@@ -117,6 +117,8 @@ on:
         required: false
       GOOGLE_MAPS_API_KEY:
         required: false
+      PAGAR_ME_APP_ID:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -141,6 +143,7 @@ jobs:
           echo "NEXT_PUBLIC_API_URL=https://${API_URL}
           NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${{ secrets.GOOGLE_TAG_MANAGER_ID }}
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          NEXT_PUBLIC_PAGAR_ME_APP_ID=${{ secrets.PAGAR_ME_APP_ID }}
           NEXT_PUBLIC_REDIRECT_URI_AMAZONCOGNITO=${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}" >> .env.local
 
       - name: Set environment variables
@@ -283,6 +286,7 @@ jobs:
         sed -i 's|<AWS_S3_BUCKET>|${{ secrets.AWS_S3_BUCKET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CHECKOUT_JWT_SECRET>|${{ secrets.CHECKOUT_JWT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGAR_ME_APP_ID>|${{ secrets.PAGAR_ME_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
@@ -294,6 +298,7 @@ jobs:
         sed -i 's|<GOOGLE_TAG_MANAGER_ID>|${{ secrets.GOOGLE_TAG_MANAGER_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGAR_ME_APP_ID>|${{ secrets.PAGAR_ME_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'

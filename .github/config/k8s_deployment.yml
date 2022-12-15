@@ -85,6 +85,8 @@ spec:
           value: "<GOOGLE_MAPS_API_KEY>"
         - name: NEXT_PUBLIC_REDIRECT_URI_AMAZONCOGNITO
           value: "<REDIRECT_URI_AMAZONCOGNITO>"
+        - name: NEXT_PUBLIC_PAGAR_ME_APP_ID
+          value: "<PAGAR_ME_APP_ID>"
         - name: API_URL
           value: "https://<API_URL>"
         - name: RECOVERY_PASSWORD_TOKEN_EXPIRATION_TIME_MINUTES
@@ -117,6 +119,8 @@ spec:
           value: "<AWS_S3_BUCKET>"
         - name: REDIRECT_URI_AMAZONCOGNITO
           value: "<REDIRECT_URI_AMAZONCOGNITO>"
+        - name: PAGAR_ME_APP_ID
+          value: "<PAGAR_ME_APP_ID>"
         - name: GOOGLE_MAPS_API_KEY
           value: "<GOOGLE_MAPS_API_KEY>"
         - name: CHECKOUT_JWT_SECRET

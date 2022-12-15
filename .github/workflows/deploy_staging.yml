@@ -144,6 +144,7 @@ on:
       PAGARME_BOLETO_TYPE:
         required: false
       PAGARME_BOLETO_DOCUMENT_NUMBER:
+      PAGAR_ME_APP_ID:
         required: false
 jobs:
   push_to_registry:
@@ -169,6 +170,7 @@ jobs:
           echo "NEXT_PUBLIC_API_URL=https://${API_URL}
           NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${{ secrets.GOOGLE_TAG_MANAGER_ID }}
           NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+          NEXT_PUBLIC_PAGAR_ME_APP_ID=${{ secrets.PAGAR_ME_APP_ID }}
           NEXT_PUBLIC_REDIRECT_URI_AMAZONCOGNITO=${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}" >> .env.local
           
 
@@ -373,6 +375,7 @@ jobs:
         sed -i 's|<AWS_FILE_UPLOAD_SECRET_KEY>|${{ secrets.AWS_FILE_UPLOAD_SECRET_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<AWS_S3_BUCKET>|${{ secrets.AWS_S3_BUCKET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGAR_ME_APP_ID>|${{ secrets.PAGAR_ME_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<CHECKOUT_JWT_SECRET>|${{ secrets.CHECKOUT_JWT_SECRET }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIS_CLUSTER_URL>|${{ env.REDIS_CLUSTER_URL }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
@@ -398,6 +401,7 @@ jobs:
         sed -i 's|<GOOGLE_TAG_MANAGER_ID>|${{ secrets.GOOGLE_TAG_MANAGER_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<PAGAR_ME_APP_ID>|${{ secrets.PAGAR_ME_APP_ID }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
