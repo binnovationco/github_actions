@@ -159,6 +159,10 @@ spec:
           value: "<AWS_ACCESS_KEY_ID>"
         - name: AWS_SECRET_ACCESS_KEY
           value: "<AWS_SECRET_ACCESS_KEY>"
+        - name: RDSTATION_API_KEY
+          value: "<RDSTATION_API_KEY>"
+        - name: RDSTATION_DEFAULT_TAGS
+          value: "<RDSTATION_DEFAULT_TAGS>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
