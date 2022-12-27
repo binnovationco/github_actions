@@ -119,6 +119,8 @@ on:
         required: false
       PAGAR_ME_APP_ID:
         required: false
+      DATADOG_API_KEY_BASE64:
+        required: false
 jobs:
   push_to_registry:
     env:
