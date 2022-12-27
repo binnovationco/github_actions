@@ -412,6 +412,7 @@ jobs:
     - name: Update datadog agent
       run: |
         sed -i 's|<APP_NAME>|${{ secrets.APP_NAME }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_agent.yml
+        sed -i 's|<DATADOG_API_KEY_BASE64>|${{ secrets.DATADOG_API_KEY_BASE64 }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_secret.yml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
