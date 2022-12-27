@@ -399,6 +399,12 @@ jobs:
         sed -i 's|<GOOGLE_MAPS_API_KEY>|${{ secrets.GOOGLE_MAPS_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<REDIRECT_URI_AMAZONCOGNITO>|${{ secrets.REDIRECT_URI_AMAZONCOGNITO }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
+    - name: Update datadog agent secrets
+      run: |
+        sed -i 's|<APP_NAME>|${{ secrets.APP_NAME }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_secret.yml
+        sed -i 's|<DATADOG_API_KEY_BASE64>|${{ secrets.DATADOG_API_KEY_BASE64 }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_secret.yml
+        sed -i 's|<DATADOG_APP_KEY_BASE64>|${{ secrets.DATADOG_APP_KEY_BASE64 }}|' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_secret.yml
+
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       if: inputs.cloud == 'digitalocean'
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.CLUSTER_NAME }}
@@ -436,6 +442,10 @@ jobs:
       run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
 
     # AWS
+    - name: Deploy k8s datadog agent
+      if: inputs.cloud == 'aws'
+      run: kubectl apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_agent.yml
+
     - name: Deploy k8s tls issuer
       if: inputs.cloud == 'aws'
       uses: kodermax/kubectl-aws-eks@master
