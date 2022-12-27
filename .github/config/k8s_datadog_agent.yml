@@ -219,7 +219,7 @@ spec:
             - name: DD_COLLECT_KUBERNETES_EVENTS
               value: "true"
             - name: DD_APM_ENABLED
-              value: "false"
+              value: "true"
             - name: DD_LOGS_ENABLED
               value: "true"
             - name: DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL
@@ -236,6 +236,8 @@ spec:
               value: "kubernetes_state"
             - name: DD_EXPVAR_PORT
               value: "6000"
+            - name: DD_CONTAINER_EXCLUDE_LOGS
+              value: "name:datadog-agent"
           volumeMounts:
             - name: installinfo
               subPath: install_info
