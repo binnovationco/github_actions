@@ -31,6 +31,18 @@ spec:
           limits:
             cpu: 100m
         env:
+        - name: DD_ENV
+          value: "staging"
+        - name: DD_SERVICE
+          value: "<APP_NAME>"
+        - name: DD_VERSION
+          value: "v1"
+        - name: DD_LOGS_INJECTION
+          value: "true"
+        - name: DD_TRACE_SAMPLE_RATE
+          value: "0.1"
+        - name: DD_PROFILING_ENABLED
+          value: "true"
         - name: PORT
           value: "3000"
         - name: DATABASE_TYPE
