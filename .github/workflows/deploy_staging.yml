@@ -148,6 +148,10 @@ on:
         required: false
       DATADOG_API_KEY_BASE64:
         required: false
+      DYNAMODB_ENDPOINT:
+        required: false
+      AWS_REGION:
+        required: false
 jobs:
   push_to_registry:
     env:
@@ -393,6 +397,8 @@ jobs:
         sed -i 's|<PAGARME_BOLETO_TYPE>|${{ secrets.PAGARME_BOLETO_TYPE }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<PAGARME_BOLETO_DOCUMENT_NUMBER>|${{ secrets.PAGARME_BOLETO_DOCUMENT_NUMBER }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<APP_ORIGINAL_NAME>|${{ env.IMAGE_NAME }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<DYNAMODB_ENDPOINT>|${{ secrets.DYNAMODB_ENDPOINT }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<AWS_REGION>|${{ secrets.AWS_REGION }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'

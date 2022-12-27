@@ -151,6 +151,10 @@ spec:
           value: "<PAGARME_BOLETO_DOCUMENT_NUMBER>"
         - name: APP_NAME
           value: "<APP_ORIGINAL_NAME>"
+        - name: DYNAMODB_ENDPOINT
+          value: "<DYNAMODB_ENDPOINT>"
+        - name: AWS_REGION
+          value: "<AWS_REGION>"
         
       imagePullSecrets:
       - name: dockerconfigjson-github-com
