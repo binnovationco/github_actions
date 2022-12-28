@@ -175,7 +175,7 @@ metadata:
       [
         {
           "dbm": true,
-          "host": "<DATABASE_HOST>",
+          "host": "aurora-mysql-staging-instance-1.cspoi7qvxvdl.us-east-1.rds.amazonaws.com",
           "port": 3306,
           "username": "datadog",
           "password": "<DATABASE_DATADOG_PASSWORD>"
