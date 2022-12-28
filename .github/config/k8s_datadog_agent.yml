@@ -161,6 +161,33 @@ subjects:
     name: datadog-cluster-agent
     namespace: default
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    tags.datadoghq.com/env: 'staging'
+    tags.datadoghq.com/service: 'datadog-mysql'
+  annotations:
+    ad.datadoghq.com/service.check_names: '["mysql"]'
+    ad.datadoghq.com/service.init_configs: '[{}]'
+    ad.datadoghq.com/service.instances: |
+      [
+        {
+          "dbm": true,
+          "host": "<DATABASE_HOST>",
+          "port": 3306,
+          "username": "datadog",
+          "password": "<DATABASE_DATADOG_PASSWORD>"
+        }
+      ]      
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+    name: mysql
+---
 # Source: datadog/templates/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
