@@ -27,6 +27,8 @@ spec:
         tags.datadoghq.com/version: v1
         admission.datadoghq.com/enabled: "true"
         app: <APP_NAME>
+      annotations:
+        ad.datadoghq.com/tags: '{"git.commit.sha": "<CD_SHA>", "git.repository_url": "<GIT_REPO>"}'
     spec:
       containers:
       - name: <APP_NAME>

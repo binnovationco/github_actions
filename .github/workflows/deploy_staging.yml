@@ -409,6 +409,7 @@ jobs:
         sed -i 's|<AWS_SECRET_ACCESS_KEY>|${{ secrets.AWS_SECRET_ACCESS_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<RDSTATION_API_KEY>|${{ secrets.RDSTATION_API_KEY }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
         sed -i 's|<RDSTATION_DEFAULT_TAGS>|${{ secrets.RDSTATION_DEFAULT_TAGS }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
+        sed -i 's|<GIT_REPO>|github.com/${{ github.repository }}|g' $GITHUB_WORKSPACE/ghactions/.github/config/k8s_deployment.yml
 
     - name: Update deployment file for NextJS and Ionic
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
