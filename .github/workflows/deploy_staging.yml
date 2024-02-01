@@ -472,37 +472,38 @@ jobs:
       run: kubectl rollout status -n ${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }} deployment.apps/${{ env.IMAGE_NAME }}-${{ env.GIT_BRANCH }}
 
     # AWS
-    - name: Deploy datadog clusterrole
-      if: inputs.cloud == 'aws'
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with: 
-        args: apply -f "https://raw.githubusercontent.com/DataDog/datadog-agent/master/Dockerfiles/manifests/rbac/clusterrole.yaml"
+    # Datadog
+    # - name: Deploy datadog clusterrole
+    #   if: inputs.cloud == 'aws'
+    #   uses: kodermax/kubectl-aws-eks@master
+    #   env:
+    #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    #   with: 
+    #     args: apply -f "https://raw.githubusercontent.com/DataDog/datadog-agent/master/Dockerfiles/manifests/rbac/clusterrole.yaml"
 
-    - name: Deploy datadog serviceaccount
-      if: inputs.cloud == 'aws'
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with: 
-        args: apply -f "https://raw.githubusercontent.com/DataDog/datadog-agent/master/Dockerfiles/manifests/rbac/serviceaccount.yaml"
+    # - name: Deploy datadog serviceaccount
+    #   if: inputs.cloud == 'aws'
+    #   uses: kodermax/kubectl-aws-eks@master
+    #   env:
+    #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    #   with: 
+    #     args: apply -f "https://raw.githubusercontent.com/DataDog/datadog-agent/master/Dockerfiles/manifests/rbac/serviceaccount.yaml"
 
-    - name: Deploy datadog clusterrolebinding
-      if: inputs.cloud == 'aws'
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with: 
-        args: apply -f "https://raw.githubusercontent.com/DataDog/datadog-agent/master/Dockerfiles/manifests/rbac/clusterrolebinding.yaml"
+    # - name: Deploy datadog clusterrolebinding
+    #   if: inputs.cloud == 'aws'
+    #   uses: kodermax/kubectl-aws-eks@master
+    #   env:
+    #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    #   with: 
+    #     args: apply -f "https://raw.githubusercontent.com/DataDog/datadog-agent/master/Dockerfiles/manifests/rbac/clusterrolebinding.yaml"
         
-    - name: Deploy k8s datadog agent
-      if: inputs.cloud == 'aws'
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with: 
-        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_agent.yml
+    # - name: Deploy k8s datadog agent
+    #   if: inputs.cloud == 'aws'
+    #   uses: kodermax/kubectl-aws-eks@master
+    #   env:
+    #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    #   with: 
+    #     args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_agent.yml
 
     - name: Deploy k8s tls issuer
       if: inputs.cloud == 'aws'
