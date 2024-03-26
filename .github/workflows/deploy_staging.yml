@@ -505,13 +505,13 @@ jobs:
     #   with: 
     #     args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_datadog_agent.yml
 
-    - name: Deploy k8s tls issuer
-      if: inputs.cloud == 'aws'
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with: 
-        args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
+ #   - name: Deploy k8s tls issuer
+ #     if: inputs.cloud == 'aws'
+ #     uses: kodermax/kubectl-aws-eks@master
+ #     env:
+ #       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+ #     with: 
+ #       args: apply -f $GITHUB_WORKSPACE/ghactions/.github/config/k8s_tls_issuer.yml
 
     - name: Deploy k8s namespace
       if: inputs.cloud == 'aws'
