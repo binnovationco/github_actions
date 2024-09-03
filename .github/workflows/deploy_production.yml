@@ -133,7 +133,7 @@ jobs:
 
       - name: Download api url file
         if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: api_url
 
@@ -203,7 +203,7 @@ jobs:
 
     - name: Download api url file
       if: inputs.framework == 'nextjs' || inputs.framework == 'ionic'
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v4.1.7
       with:
         name: api_url
 
